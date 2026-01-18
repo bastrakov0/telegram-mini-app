@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Mini App</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="user-info">
+                <div class="avatar"><i class="fas fa-user-circle"></i></div>
+                <div class="user-details">
+                    <span class="username" id="username">Пользователь</span>
+                    <span class="status">Online</span>
+                </div>
+            </div>
+            <div class="notifications">
+                <i class="fas fa-bell"></i>
+                <span class="badge">3</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="welcome-section">
+                <h1><i class="fas fa-gem"></i> Добро пожаловать!</h1>
+                <p>Используйте возможности нашего приложения</p>
+            </div>
+
+            <div class="cards-grid">
+                <div class="card" onclick="sendAction('deposit')">
+                    <div class="card-icon deposit"><i class="fas fa-plus-circle"></i></div>
+                    <h3>Пополнить</h3>
+                    <p>Быстрое пополнение счета</p>
+                </div>
+
+                <div class="card" onclick="sendAction('withdraw')">
+                    <div class="card-icon withdraw"><i class="fas fa-arrow-up"></i></div>
+                    <h3>Вывести</h3>
+                    <p>Вывод средств на карту</p>
+                </div>
+
+                <div class="card" onclick="sendAction('transfer')">
+                    <div class="card-icon transfer"><i class="fas fa-exchange-alt"></i></div>
+                    <h3>Перевести</h3>
+                    <p>Перевод другому пользователю</p>
+                </div>
+
+                <div class="card" onclick="sendAction('settings')">
+                    <div class="card-icon settings"><i class="fas fa-cog"></i></div>
+                    <h3>Настройки</h3>
+                    <p>Настройки аккаунта</p>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <h2><i class="fas fa-chart-line"></i> Статистика</h2>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Баланс</span>
+                        <span class="stat-value">1,000 ₽</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Доход за месяц</span>
+                        <span class="stat-value">+250 ₽</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Операций</span>
+                        <span class="stat-value">12</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active" onclick="showSection('balance')">
+                <i class="fas fa-wallet"></i>
+                <span>Баланс</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('requisites')">
+                <i class="fas fa-credit-card"></i>
+                <span>Реквизиты</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('history')">
+                <i class="fas fa-history"></i>
+                <span>История</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('main')">
+                <i class="fas fa-home"></i>
+                <span>Главная</span>
+            </a>
+        </nav>
+
+        <div class="action-button">
+            <button onclick="sendAction('quick_action')">
+                <i class="fas fa-bolt"></i> Быстрое действие
+            </button>
+        </div>
+    </div>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
