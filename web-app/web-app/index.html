@@ -1,0 +1,447 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MGR_12</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Верхняя панель -->
+        <header class="header">
+            <div class="user-id" onclick="copyUserId()" title="Нажмите для копирования">
+                <i class="fas fa-user-shield"></i>
+                <span id="userId">id: 739-228-415</span>
+                <i class="fas fa-copy copy-icon"></i>
+            </div>
+            <button class="back-btn" id="backBtn" onclick="showMain()">
+                <i class="fas fa-arrow-left"></i> Назад
+            </button>
+        </header>
+
+        <!-- Основной контент -->
+        <main class="main-content" id="mainContent">
+            <!-- Главная страница -->
+            <div class="page active" id="homePage">
+                <div class="company-section">
+                    <h1><i class="fas fa-crown"></i> MGR_12</h1>
+                    <p class="company-slogan">топ 1 платформа СНГ</p>
+                </div>
+
+                <div class="balance-display">
+                    <div class="balance-label">Баланс аккаунта</div>
+                    <div class="balance-amount" id="currentBalance">0.00$</div>
+                    <div class="balance-actions">
+                        <button class="refresh-btn" onclick="updateBalance()">
+                            <i class="fas fa-sync-alt"></i> Обновить
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cards-grid">
+                    <div class="card" onclick="showDepositPage()">
+                        <div class="card-icon deposit">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <h3>Пополнить</h3>
+                        <p>Пополнение USDT (TRC-20)</p>
+                    </div>
+
+                    <div class="card" onclick="showWithdrawPage()">
+                        <div class="card-icon withdraw">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <h3>Вывести</h3>
+                        <p>Вывод USDT (TRC-20)</p>
+                    </div>
+
+                    <div class="card" onclick="showTransferPage()">
+                        <div class="card-icon transfer">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <h3>Перевести</h3>
+                        <p>Перевод USDT на другой аккаунт</p>
+                    </div>
+
+                    <div class="card" onclick="showProfilePage()">
+                        <div class="card-icon profile">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3>Профиль</h3>
+                        <p>Ваш кошелек и реквизиты</p>
+                    </div>
+                </div>
+
+                <div class="stats-section">
+                    <h2><i class="fas fa-chart-line"></i> Статистика</h2>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Пополнений</span>
+                            <span class="stat-value" id="depositCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Выводов</span>
+                            <span class="stat-value" id="withdrawCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Переводов</span>
+                            <span class="
+stat-value" id="transferCount">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Страница профиля -->
+            <div class="page" id="profilePage">
+                <div class="page-header">
+                    <h2><i class="fas fa-user-circle"></i> Мой профиль</h2>
+                </div>
+
+                <div class="profile-content">
+                    <div class="profile-card">
+                        <div class="profile-info">
+                            <div class="info-item">
+                                <span class="label">Ваш ID:</span>
+                                <div class="value clickable" onclick="copyUserId()">
+                                    739-228-415 <i class="fas fa-copy"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wallet-section">
+                        <h3><i class="fas fa-wallet"></i> Ваш криптокошелек</h3>
+                        
+                        <div class="wallet-card">
+                            <div class="wallet-header">
+                                <div class="network-badge">
+                                    <i class="fas fa-link"></i> TRC-20
+                                </div>
+                                <div class="currency-badge">
+                                    <i class="fas fa-dollar-sign"></i> USDT
+                                </div>
+                            </div>
+
+                            <div class="address-container">
+                                <label>Адрес для пополнения:</label>
+                                <div class="address-display" onclick="copyAddress()">
+                                    <span id="walletAddress">T9zXp9vLk8nGm3JfD2q1rW5tY7uI0oP4a6</span>
+                                    <i class="fas fa-copy copy-icon"></i>
+                                </div>
+                                <p class="address-note">
+                                    <i class="fas fa-info-circle"></i>
+                                    Отправляйте только USDT по сети TRC-20
+                                </p>
+                            </div>
+
+                            <div class="qr-container">
+                                <h4>QR-код для пополнения:</h4>
+                                <div class="qr-code">
+                                    <div class="qr-placeholder">
+                                        <i class="fas fa-qrcode"></i>
+                                        <p>QR-код сгенерирован</p>
+                                        <small>Отсканируйте для быстрого пополнения</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="wallet-actions">
+                                <button class="wallet-btn" onclick="shareWallet()">
+                                    <i class="fas fa-share-alt"></i> Поделиться
+                                </button>
+                                <button class="wallet-btn" onclick="saveWalletInfo()">
+                                    <i class="fas fa-save"></i> Сохранить
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="security-info">
+                            <h4><i class="fas fa-shield-alt"></i> Меры безопасности</h4>
+                            <ul class="security-list">
+                                <li><i class="fas fa-check"></i> Никому не передавайте приватные ключи</li>
+                                <li><i class="fas fa-check"></i> Проверяйте адрес перед отправкой</li>
+                                <li><i class="fas fa-check"></i> Используйте только сеть TRC-20 для USDT</li>
+                                <li><i class="fas fa-check"></i> Храните адрес в безопасном месте</li>
+                            </ul>
+                        </div>
+</div>
+                </div>
+            </div>
+
+            <!-- Страница пополнения -->
+            <div class="page" id="depositPage">
+                <div class="page-header">
+                    <h2><i class="fas fa-plus-circle"></i> Пополнение счета</h2>
+                </div>
+
+                <div class="deposit-content">
+                    <div class="deposit-info">
+                        <div class="info-card">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Пополнение осуществляется только в USDT по сети TRC-20</p>
+                        </div>
+                    </div>
+
+                    <div class="address-section">
+                        <h3>Ваш адрес для пополнения:</h3>
+                        <div class="address-box" onclick="copyAddress()">
+                            <code id="depositAddress">T9zXp9vLk8nGm3JfD2q1rW5tY7uI0oP4a6</code>
+                            <button class="copy-btn">
+                                <i class="fas fa-copy"></i> Копировать
+                            </button>
+                        </div>
+                        <p class="address-hint">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Отправляйте только USDT (TRC-20) на этот адрес
+                        </p>
+                    </div>
+
+                    <div class="qr-section">
+                        <h3>Или отсканируйте QR-код:</h3>
+                        <div class="qr-box">
+                            <div class="qr-display">
+                                <i class="fas fa-qrcode"></i>
+                                <p>QR-код вашего адреса</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="deposit-instructions">
+                        <h3><i class="fas fa-list-ol"></i> Инструкция:</h3>
+                        <ol class="instructions-list">
+                            <li>Скопируйте адрес выше или отсканируйте QR-код</li>
+                            <li>Отправьте USDT на этот адрес с любого кошелька</li>
+                            <li>Убедитесь, что выбрали сеть TRC-20</li>
+                            <li>Средства поступят в течение 5-30 минут</li>
+                        </ol>
+                    </div>
+
+                    <div class="deposit-notice">
+                        <i class="fas fa-clock"></i>
+                        <p>После отправки средств нажмите "Проверить пополнение"</p>
+                    </div>
+
+                    <div class="deposit-actions">
+                        <button class="action-btn check-btn" onclick="checkDeposit()">
+                            <i class="fas fa-sync"></i> Проверить пополнение
+                        </button>
+                        <button class="action-btn support-btn" onclick="contactSupport()">
+                            <i class="fas fa-headset"></i> Поддержка
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Страница вывода -->
+            <div class="page" id="withdrawPage">
+                <div class="page-header">
+                    <h2><i class="fas fa-arrow-up"></i> Вывод средств</h2>
+                </div>
+
+                <div class="withdraw-content">
+                    <div class="withdraw-info">
+                        <div class="info-card">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Вывод осуществляется только в USDT по сети TRC-20</p>
+                        </div>
+                    </div>
+
+                    <form class="withdraw-form" onsubmit="processWithdraw(event)">
+                        <div class="form-group">
+                            <label for="withdrawAmount">
+                                <i class="fas fa-coins"></i> Сумма вывода ($)
+                            </label>
+                            <div class="amount-input">
+                                <input type="number" id="withdrawAmount"
+placeholder="Введите сумму" 
+                                       min="10" 
+                                       max="10000" 
+                                       step="0.01"
+                                       required>
+                                <span class="currency">$</span>
+                            </div>
+                            <div class="balance-info">
+                                Доступно: <span id="availableBalance">0.00$</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="withdrawAddress">
+                                <i class="fas fa-wallet"></i> Адрес кошелька TRC-20
+                            </label>
+                            <div class="address-input">
+                                <input type="text" 
+                                       id="withdrawAddress" 
+                                       placeholder="Txxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                                       pattern="^T[a-zA-Z0-9]{33}$"
+                                       title="Адрес TRC-20 должен начинаться с T и содержать 34 символа"
+                                       required>
+                                <button type="button" class="paste-btn" onclick="pasteAddress()">
+                                    <i class="fas fa-paste"></i>
+                                </button>
+                            </div>
+                            <div class="address-hint">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Убедитесь, что адрес поддерживает USDT (TRC-20)
+                            </div>
+                        </div>
+
+                        <div class="fee-info">
+                            <div class="fee-item">
+                                <span>Комиссия сети:</span>
+                                <span class="fee-value">1 USDT</span>
+                            </div>
+                            <div class="fee-item">
+                                <span>К получению:</span>
+                                <span class="receive-value" id="receiveAmount">0.00 USDT</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="withdrawMemo">Примечание (необязательно)</label>
+                            <textarea id="withdrawMemo" 
+                                      placeholder="Например: Вывод средств" 
+                                      rows="2"></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-btn withdraw-submit">
+                            <i class="fas fa-paper-plane"></i> Вывести средства
+                        </button>
+                    </form>
+
+                    <div class="withdraw-notice">
+                        <i class="fas fa-clock"></i>
+                        <p>Вывод обрабатывается в течение 15-60 минут в рабочее время</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Страница перевода -->
+            <div class="page" id="transferPage">
+                <div class="page-header">
+                    <h2><i class="fas fa-exchange-alt"></i> Перевод средств</h2>
+                </div>
+
+                <div class="transfer-content">
+                    <div class="transfer-info">
+                        <div class="info-card">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Перевод USDT на другой аккаунт MGR_12 по ID</p>
+                        </div>
+                    </div>
+
+                    <form class="transfer-form" onsubmit="processTransfer(event)">
+                        <div class="form-group">
+                            <label for="recipientId">
+                                <i class="fas fa-user"></i> ID получателя
+                            </label>
+                            <div class="id-input">
+<input type="text" 
+                                       id="recipientId" 
+                                       placeholder="Введите ID (например: 123-456-789)"
+                                       pattern="^[0-9]{3}-[0-9]{3}-[0-9]{3}$"
+                                       title="Формат: XXX-XXX-XXX"
+                                       required>
+                                <button type="button" class="scan-btn" onclick="scanQR()">
+                                    <i class="fas fa-qrcode"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transferAmount">
+                                <i class="fas fa-coins"></i> Сумма перевода ($)
+                            </label>
+                            <div class="amount-input">
+                                <input type="number" 
+                                       id="transferAmount" 
+                                       placeholder="Введите сумму" 
+                                       min="1" 
+                                       max="5000" 
+                                       step="0.01"
+                                       required>
+                                <span class="currency">$</span>
+                            </div>
+                            <div class="quick-amounts">
+                                <button type="button" class="quick-amount" onclick="setTransferAmount(10)">10$</button>
+                                <button type="button" class="quick-amount" onclick="setTransferAmount(50)">50$</button>
+                                <button type="button" class="quick-amount" onclick="setTransferAmount(100)">100$</button>
+                                <button type="button" class="quick-amount" onclick="setTransferAmount(500)">500$</button>
+                            </div>
+                            <div class="balance-info">
+                                Доступно: <span id="transferBalance">0.00$</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transferNote">Сообщение получателю (необязательно)</label>
+                            <textarea id="transferNote" 
+                                      placeholder="Введите сообщение" 
+                                      rows="2"
+                                      maxlength="100"></textarea>
+                            <div class="char-count">
+                                <span id="charCount">0</span>/100 символов
+                            </div>
+                        </div>
+
+                        <div class="fee-info">
+                            <div class="fee-item">
+                                <span>Комиссия перевода:</span>
+                                <span class="fee-value">0.5%</span>
+                            </div>
+                            <div class="fee-item">
+                                <span>Получит получатель:</span>
+                                <span class="receive-value" id="recipientAmount">0.00$</span>
+                            </div>
+                        </div>
+
+                        <div class="recipient-preview" id="recipientPreview" style="display: none;">
+                            <div class="preview-header">
+                                <i class="fas fa-user-check"></i>
+                                <span>Получатель:</span>
+                            </div>
+                            <div class="preview-info">
+                                <span id="previewId"></span>
+                                <span id="previewName">Пользователь</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-btn transfer-submit">
+                            <i class="fas fa-paper-plane"></i> Отправить перевод
+                        </button>
+</form>
+
+                    <div class="transfer-notice">
+                        <i class="fas fa-shield-alt"></i>
+                        <p>Переводы мгновенные. Проверяйте ID получателя перед отправкой</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Нижнее меню -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item" onclick="showProfilePage()">
+                <i class="fas fa-user"></i>
+                <span>Профиль</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showHistory()">
+                <i class="fas fa-history"></i>
+                <span>История</span>
+            </a>
+            <a href="#" class="nav-item active" onclick="showMain()">
+                <i class="fas fa-home"></i>
+                <span>Главная</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
