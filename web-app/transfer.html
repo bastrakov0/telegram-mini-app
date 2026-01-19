@@ -4,179 +4,66 @@
     </div>
 
     <div class="transfer-content">
-        <div class="balance-info">
-            <div class="balance-label">Доступно для перевода</div>
-            <div class="balance-amount" id="availableBalance">0.00$</div>
-        </div>
-
         <div class="info-card">
             <i class="fas fa-info-circle"></i>
-            <p>Перевод средств другому пользователю MGR_12 по ID</p>
+            <p>Перевод USDT на другой аккаунт MGR_12 по ID</p>
         </div>
 
         <form class="transfer-form" onsubmit="processTransfer(event)">
             <div class="form-group">
-                <label for="recipientId">
-                    <i class="fas fa-user-tag"></i> ID получателя
+                <label for="recipientId" class="form-label">
+                    <i class="fas fa-user"></i> ID получателя
                 </label>
-                <input 
-                    type="text" 
-                    id="recipientId" 
-                    placeholder="000-000-000"
-                    pattern="^[0-9]{3}-[0-9]{3}-[0-9]{3}$"
-                    required
-                >
-                <div class="input-hint">
-                    Формат: <code>000-000-000</code>
-                </div>
+                <input type="text" 
+                       id="recipientId" 
+                       class="form-input"
+                       placeholder="Введите ID (например: 123-456-789)"
+                       pattern="^[0-9]{3}-[0-9]{3}-[0-9]{3}$"
+                       title="Формат: XXX-XXX-XXX"
+                       required>
             </div>
 
             <div class="form-group">
-                <label for="transferAmount">
-                    <i class="fas fa-dollar-sign"></i> Сумма перевода
+                <label for="transferAmount" class="form-label">
+                    <i class="fas fa-coins"></i> Сумма перевода ($)
                 </label>
-                <div class="input-with-suffix">
-                    <input 
-                        type="number" 
-                        id="transferAmount" 
-                        placeholder="0.00" 
-                        min="1" 
-                        step="0.01"
-                        required
-                    >
-                    <span class="input-suffix">$</span>
+                <div class="amount-input-container">
+                    <input type="number" 
+                           id="transferAmount" 
+                           class="form-input"
+                           placeholder="0.00"
+                           min="1"
+                           max="5000"
+                           step="0.01"
+                           required>
+                    <button type="button" class="max-btn" onclick="setMaxTransfer()">
+                        Макс.
+                    </button>
                 </div>
-                <div class="input-hint">
-                    Минимальная сумма: <strong>1$</strong>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="transferNote">
-                    <i class="fas fa-comment"></i> Сообщение получателю (опционально)
-                </label>
-                <textarea 
-                    id="transferNote" 
-                    placeholder="Введите сообщение..."
-                    maxlength="100"
-                    rows="2"
-                ></textarea>
-                <div class="char-counter">
-                    <span id="charCount">0</span>/100 символов
-                </div>
-            </div>
-
-            <!-- Превью получателя -->
-            <div class="recipient-preview" id="recipientPreview" style="display: none;">
-                <h3><i class="fas fa-eye"></i> Превью перевода:</h3>
-                <div class="preview-card">
-                    <div class="preview-header">
-                        <i class="fas fa-user-circle"></i>
-                        <div class="preview-info">
-                            <h4>Получатель</h4>
-                            <p>ID: <span id="previewId">000-000-000</span></p>
-                        </div>
-                    </div>
-                    <div class="preview-details">
-                        <div class="preview-item">
-                            <span>Сумма перевода:</span>
-                            <span id="previewAmount">0.00$</span>
-                        </div>
-                        <div class="preview-item">
-                            <span>Комиссия (0.5%):</span>
-                            <span id="previewFee">0.00$</span>
-                        </div>
-                        <div class="preview-item total">
-                            <span>Получит:</span>
-                            <span id="recipientAmount">0.00$</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="quick-amounts">
-                <h3><i class="fas fa-bolt"></i> Быстрые суммы:</h3>
-                <div class="quick-buttons">
-                    <button type="button" class="quick-amount">5$</button>
-                    <button type="button" class="quick-amount">10$</button>
-                    <button type="button" class="quick-amount">25$</button>
-                    <button type="button" class="quick-amount">50$</button>
-                    <button type="button" class="quick-amount">100$</button>
+                <div class="balance-info">
+                    Доступно: <span id="transferBalance">0.00$</span>
                 </div>
             </div>
 
             <div class="fee-info">
-                <h3><i class="fas fa-percentage"></i> Комиссия за перевод:</h3>
-                <div class="fee-details">
-                    <div class="fee-item">
-                        <span>Комиссия системы:</span>
-                        <span>0.5% от суммы</span>
-                    </div>
-                    <div class="fee-item">
-                        <span>Максимальная комиссия:</span>
-                        <span>50$</span>
-                    </div>
-                    <div class="fee-item">
-                        <span>Минимальная комиссия:</span>
-                        <span>0.10$</span>
-                    </div>
+                <div class="fee-item">
+                    <span>Комиссия перевода:</span>
+                    <span class="fee-value">0.5%</span>
+                </div>
+                <div class="fee-item">
+                    <span>Получит получатель:</span>
+                    <span class="receive-value" id="recipientAmount">0.00$</span>
                 </div>
             </div>
 
-            <div class="security-verification">
-                <h3><i class="fas fa-shield-alt"></i> Подтверждение:</h3>
-                <div class="verification-item">
-                    <input type="checkbox" id="confirmAddress" required>
-                    <label for="confirmAddress">
-                        Я проверил(а) ID получателя
-                    </label>
-                </div>
-                <div class="verification-item">
-                    <input type="checkbox" id="confirmAmount" required>
-                    <label for="confirmAmount">
-                        Я подтверждаю сумму перевода
-                    </label>
-                </div>
-                <div class="verification-item">
-                    <input type="checkbox" id="confirmIrreversible" required>
-                    <label for="confirmIrreversible">
-                        Я понимаю, что перевод необратим
-                    </label>
-                </div>
-            </div>
-
-            <div class="important-notice">
-                <div class="notice-header">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <h3>Важная информация:</h3>
-                </div>
-                <ul class="notice-list">
-                    <li>Переводы необратимы и не могут быть отменены</li>
-                    <li>Проверяйте ID получателя перед отправкой</li>
-                    <li>Комиссия удерживается автоматически</li>
-                    <li>Переводы обрабатываются мгновенно</li>
-                    <li>При ошибке - обратитесь в поддержку</li>
-                </ul>
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="submit-btn transfer-submit">
-                    <i class="fas fa-paper-plane"></i> Подтвердить перевод
-                </button>
-                <button type="button" class="cancel-btn" onclick="showMain()">
-                    <i class="fas fa-times"></i> Отмена
-                </button>
-            </div>
+            <button type="submit" class="confirm-btn">
+                <i class="fas fa-paper-plane"></i> Отправить перевод
+            </button>
         </form>
 
-        <div class="qr-scan-section">
-            <h3><i class="fas fa-qrcode"></i> Сканирование QR:</h3>
-            <button class="scan-btn" onclick="scanQR()">
-                <i class="fas fa-camera"></i> Сканировать QR-код
-            </button>
-            <p class="scan-hint">
-                Можно отсканировать QR-код с ID пользователя
-            </p>
+        <div class="transfer-notice">
+            <i class="fas fa-shield-alt"></i>
+            <p>Переводы мгновенные. Проверяйте ID получателя перед отправкой</p>
         </div>
     </div>
 </div>

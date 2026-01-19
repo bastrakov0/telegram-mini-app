@@ -4,119 +4,70 @@
     </div>
 
     <div class="withdraw-content">
-        <div class="balance-info">
-            <div class="balance-label">Доступно для вывода</div>
-            <div class="balance-amount" id="availableBalance">0.00$</div>
+        <div class="info-card">
+            <i class="fas fa-info-circle"></i>
+            <p>Вывод осуществляется только в USDT по сети TRC-20</p>
         </div>
 
         <form class="withdraw-form" onsubmit="processWithdraw(event)">
             <div class="form-group">
-                <label for="withdrawAmount">
-                    <i class="fas fa-dollar-sign"></i> Сумма вывода (USDT)
+                <label for="withdrawAmount" class="form-label">
+                    <i class="fas fa-coins"></i> Сумма вывода ($)
                 </label>
-                <div class="input-with-suffix">
-                    <input 
-                        type="number" 
-                        id="withdrawAmount" 
-                        placeholder="0.00" 
-                        min="10" 
-                        step="0.01"
-                        required
-                    >
-                    <span class="input-suffix">$</span>
-                </div>
-                <div class="input-hint">
-                    Минимальная сумма: <strong>10$</strong>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="withdrawAddress">
-                    <i class="fas fa-wallet"></i> Адрес кошелька (TRC-20)
-                </label>
-                <div class="input-with-button">
-                    <input 
-                        type="text" 
-                        id="withdrawAddress" 
-                        placeholder="TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                        pattern="^T[a-zA-Z0-9]{33}$"
-                        required
-                    >
-                    <button type="button" class="paste-btn" onclick="pasteAddress()">
-                        <i class="fas fa-paste"></i>
+                <div class="amount-input-container">
+                    <input type="number" 
+                           id="withdrawAmount" 
+                           class="form-input"
+                           placeholder="0.00"
+                           min="10"
+                           max="10000"
+                           step="0.01"
+                           required>
+                    <button type="button" class="max-btn" onclick="setMaxWithdraw()">
+                        Макс.
                     </button>
                 </div>
-                <div class="input-hint">
-                    Формат: <code>T</code> + 33 символа (только TRC-20)
+                <div class="balance-info">
+                    Доступно: <span id="availableBalance">0.00$</span>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="withdrawMemo">
-                    <i class="fas fa-sticky-note"></i> Примечание (опционально)
+                <label for="withdrawAddress" class="form-label">
+                    <i class="fas fa-wallet"></i> Адрес кошелька TRC-20
                 </label>
-                <input 
-                    type="text" 
-                    id="withdrawMemo" 
-                    placeholder="Назначение платежа"
-                    maxlength="50"
-                >
-                <div class="input-hint">
-                    Максимум 50 символов
-                </div>
-            </div>
-
-            <div class="fee-calculator">
-                <h3><i class="fas fa-calculator"></i> Расчет комиссии:</h3>
-                <div class="fee-details">
-                    <div class="fee-item">
-                        <span>Сумма вывода:</span>
-                        <span id="withdrawalAmount">0.00$</span>
-                    </div>
-                    <div class="fee-item">
-                        <span>Комиссия сети:</span>
-                        <span>1 USDT</span>
-                    </div>
-                    <div class="fee-item total">
-                        <span>Вы получите:</span>
-                        <span id="receiveAmount">0.00 USDT</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="quick-amounts">
-                <h3><i class="fas fa-bolt"></i> Быстрые суммы:</h3>
-                <div class="quick-buttons">
-                    <button type="button" class="quick-amount" data-amount="10">10$</button>
-                    <button type="button" class="quick-amount" data-amount="50">50$</button>
-                    <button type="button" class="quick-amount" data-amount="100">100$</button>
-                    <button type="button" class="quick-amount" data-amount="500">500$</button>
-                    <button type="button" class="quick-amount" data-amount="1000">1000$</button>
-                </div>
-            </div>
-
-            <div class="important-notice">
-                <div class="notice-header">
+                <input type="text" 
+                       id="withdrawAddress" 
+                       class="form-input"
+                       placeholder="Txxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                       pattern="^T[a-zA-Z0-9]{33}$"
+                       title="Адрес TRC-20 должен начинаться с T и содержать 34 символа"
+                       required>
+                <div class="address-hint">
                     <i class="fas fa-exclamation-circle"></i>
-                    <h3>Внимание!</h3>
+                    Убедитесь, что адрес поддерживает USDT (TRC-20)
                 </div>
-                <ul class="notice-list">
-                    <li>Вывод только на кошельки TRC-20</li>
-                    <li>Комиссия сети: 1 USDT (фиксированная)</li>
-                    <li>Время обработки: 5-30 минут</li>
-                    <li>Максимальный вывод в сутки: 5000$</li>
-                    <li>Перед выводом проверьте адрес кошелька</li>
-                </ul>
             </div>
 
-            <div class="form-actions">
-                <button type="submit" class="submit-btn withdraw-submit">
-                    <i class="fas fa-paper-plane"></i> Заказать вывод
-                </button>
-                <button type="button" class="cancel-btn" onclick="showMain()">
-                    <i class="fas fa-times"></i> Отмена
-                </button>
+            <div class="fee-info">
+                <div class="fee-item">
+                    <span>Комиссия сети:</span>
+                    <span class="fee-value">1 USDT</span>
+                </div>
+                <div class="fee-item">
+                    <span>К получению:</span>
+                    <span class="receive-value" id="receiveAmount">0.00 USDT</span>
+                </div>
             </div>
+
+            <button type="submit" class="confirm-btn">
+                <i class="fas fa-paper-plane"></i> Вывести средства
+            </button>
         </form>
+
+        <div class="withdraw-notice">
+            <i class="fas fa-clock"></i>
+            <p>Вывод обрабатывается в течение 15-60 минут в рабочее время</p>
+        </div>
     </div>
 </div>

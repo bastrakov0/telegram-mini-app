@@ -676,3 +676,133 @@ window.loadPage = loadPage;
 
 // Инициализация при загрузке
 document.addEventListener('DOMContentLoaded', initApp);
+
+// Добавьте эти функции в app.js
+
+// Установить максимальную сумму
+function setMaxAmount() {
+    const input = document.getElementById('depositAmount');
+    if (input) {
+        input.value = 10000; // Максимальный лимит
+        updateDepositCalculation();
+    }
+}
+
+function setMaxWithdraw() {
+    const input = document.getElementById('withdrawAmount');
+    if (input) {
+        input.value = parseFloat(balance.toFixed(2));
+        const event = new Event('input');
+        input.dispatchEvent(event);
+    }
+}
+
+function setMaxTransfer() {
+    const input = document.getElementById('transferAmount');
+    if (input) {
+        input.value = parseFloat(balance.toFixed(2));
+        const event = new Event('input');
+        input.dispatchEvent(event);
+    }
+}
+
+// Обновление расчета пополнения
+function updateDepositCalculation() {
+    const amount = parseFloat(document.getElementById('depositAmount').value) || 0;
+    const commission = 0.025; // 2.5%
+    const fee = amount * commission;
+    const total = amount + fee;
+    
+    document.getElementById('depositSum').textContent = amount.toFixed(2) + '$';
+    document.getElementById('depositTotal').textContent = total.toFixed(2) + '$';
+}
+
+// Выбор способа оплаты
+function selectPaymentMethod(method) {
+    document.querySelectorAll('.payment-method').forEach(item => {
+        item.classList.remove('active');
+    });
+    event.target.closest('.payment-method').classList.add('active');
+}
+
+// Обработка пополнения
+function processDeposit() {
+    const amount = parseFloat(document.getElementById('depositAmount').value) || 0;
+    
+    if (amount < 10) {
+        showNotification('Минимальная сумма пополнения: 10$', 'error');
+        return;
+    }
+    
+    if (amount > 10000) {
+        showNotification('Максимальная сумма пополнения: 10000$', 'error');
+        return;
+    }
+    
+    const confirmText = `Подтвердите пополнение:\n\nСумма: ${amount.toFixed(2)}$\nКомиссия: 2.5%\nИтого к оплате: ${(amount * 1.025).toFixed(2)}$`;
+    
+    if (confirm(confirmText)) {
+        showNotification('Перенаправляем на страницу оплаты...', 'info');
+        // Здесь будет редирект на платежную систему
+    }
+}
+
+// Функции для реквизитов
+function updateLimit(id, value) {
+    document.getElementById('limitValue' + id).textContent = value;
+    document.getElementById('cardLimit' + id).textContent = value + '$';
+}
+
+function showAddRequisiteModal() {
+    document.getElementById('addRequisiteModal').style.display = 'flex';
+}
+
+function closeAddRequisiteModal() {
+    document.getElementById('addRequisiteModal').style.display = 'none';
+}
+
+function selectRequisiteType(type) {
+    document.querySelectorAll('.type-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    if (type === 'card') {
+        document.getElementById('cardFields').style.display = 'block';
+        document.getElementById('phoneFields').style.display = 'none';
+    } else {
+        document.getElementById('cardFields').style.display = 'none';
+        document.getElementById('phoneFields').style.display = 'block';
+    }
+}
+
+function saveRequisite(event) {
+    event.preventDefault();
+    closeAddRequisiteModal();
+    showNotification('Реквизиты успешно добавлены', 'success');
+}
+
+// Добавьте обработчики событий для полей ввода
+function initDepositPage() {
+    const amountInput = document.getElementById('depositAmount');
+    if (amountInput) {
+        amountInput.addEventListener('input', updateDepositCalculation);
+    }
+}
+
+// Добавьте в инициализацию страниц
+function initPageSpecificFunctions(pageName) {
+    switch(pageName) {
+        case 'home':
+            initHomePage();
+            break;
+        case 'requisites':
+            initRequisitesPage();
+            break;
+        // ... остальные страницы
+        
+        case 'deposit':
+            initDepositPage(); // Добавить эту строку
+            break;
+    }
+}

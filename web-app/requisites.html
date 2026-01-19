@@ -1,78 +1,198 @@
 <div class="page" id="requisitesPage">
     <div class="page-header">
-        <h2><i class="fas fa-credit-card"></i> Реквизиты</h2>
+        <h2><i class="fas fa-credit-card"></i> Мои реквизиты</h2>
     </div>
 
     <div class="requisites-content">
         <div class="info-card">
             <i class="fas fa-info-circle"></i>
-            <p>Ваши реквизиты для пополнения USDT (TRC-20)</p>
+            <p>Добавьте реквизиты для быстрых переводов</p>
         </div>
 
-        <div class="wallet-card">
-            <div class="wallet-header">
-                <div class="network-badge">
-                    <i class="fas fa-link"></i> TRC-20
+        <!-- Список реквизитов -->
+        <div class="requisites-list" id="requisitesList">
+            <div class="requisite-item">
+                <div class="requisite-header">
+                    <div class="requisite-type card">
+                        <i class="fas fa-credit-card"></i> Банковская карта
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
                 </div>
-                <div class="currency-badge">
-                    <i class="fas fa-dollar-sign"></i> USDT
-                </div>
-            </div>
-
-            <div class="address-section">
-                <h3>Адрес для пополнения:</h3>
-                <div class="address-box">
-                    <code id="walletAddress">T9zXp9vLk8nGm3JfD2q1rW5tY7uI0oP4a6</code>
-                    <button class="copy-btn">
-                        <i class="fas fa-copy"></i> Копировать
-                    </button>
-                </div>
-                <p class="address-hint">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Отправляйте только USDT (TRC-20) на этот адрес
-                </p>
-            </div>
-
-            <div class="qr-section">
-                <h3>QR-код для пополнения:</h3>
-                <div class="qr-box">
-                    <div class="qr-display">
-                        <i class="fas fa-qrcode"></i>
-                        <p>QR-код вашего адреса</p>
-                        <small>Отсканируйте для быстрого пополнения</small>
+                
+                <div class="requisite-info">
+                    <div class="requisite-row">
+                        <span class="requisite-label">Банк:</span>
+                        <span class="requisite-value">Тинькофф</span>
+                    </div>
+                    <div class="requisite-row">
+                        <span class="requisite-label">Номер карты:</span>
+                        <span class="requisite-value">**** 4837</span>
+                    </div>
+                    <div class="requisite-row">
+                        <span class="requisite-label">Лимит:</span>
+                        <span class="requisite-value" id="cardLimit1">500$</span>
                     </div>
                 </div>
+                
+                <div class="limit-control">
+                    <span class="limit-value">Лимит: <span id="limitValue1">500</span>$</span>
+                    <input type="range" 
+                           min="10" 
+                           max="5000" 
+                           value="500" 
+                           class="limit-slider"
+                           oninput="updateLimit(1, this.value)">
+                </div>
             </div>
 
-            <div class="wallet-actions">
-                <button class="wallet-btn">
-                    <i class="fas fa-share-alt"></i> Поделиться
-                </button>
-                <button class="wallet-btn">
-                    <i class="fas fa-save"></i> Сохранить
-                </button>
+            <div class="requisite-item">
+                <div class="requisite-header">
+                    <div class="requisite-type phone">
+                        <i class="fas fa-phone"></i> СБП
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="requisite-info">
+                    <div class="requisite-row">
+                        <span class="requisite-label">Банк:</span>
+                        <span class="requisite-value">Сбербанк</span>
+                    </div>
+                    <div class="requisite-row">
+                        <span class="requisite-label">Телефон:</span>
+                        <span class="requisite-value">+7 *** *** ** 45</span>
+                    </div>
+                    <div class="requisite-row">
+                        <span class="requisite-label">Лимит:</span>
+                        <span class="requisite-value" id="cardLimit2">1000$</span>
+                    </div>
+                </div>
+                
+                <div class="limit-control">
+                    <span class="limit-value">Лимит: <span id="limitValue2">1000</span>$</span>
+                    <input type="range" 
+                           min="10" 
+                           max="10000" 
+                           value="1000" 
+                           class="limit-slider"
+                           oninput="updateLimit(2, this.value)">
+                </div>
             </div>
         </div>
 
-        <div class="instructions-section">
-            <h3><i class="fas fa-list-ol"></i> Инструкция по пополнению:</h3>
-            <ol class="instructions-list">
-                <li>Скопируйте адрес выше или отсканируйте QR-код</li>
-                <li>Отправьте USDT на этот адрес с любого кошелька</li>
-                <li>Убедитесь, что выбрали сеть TRC-20</li>
-                <li>Средства поступят в течение 5-30 минут</li>
-                <li>После отправки нажмите "Проверить пополнение" на главной</li>
-            </ol>
-        </div>
+        <!-- Кнопка добавления реквизита -->
+        <button class="add-requisite-btn" onclick="showAddRequisiteModal()">
+            <i class="fas fa-plus"></i> Добавить реквизиты
+        </button>
 
-        <div class="security-info">
-            <h3><i class="fas fa-shield-alt"></i> Меры безопасности:</h3>
-            <ul class="security-list">
-                <li><i class="fas fa-check"></i> Никому не передавайте приватные ключи</li>
-                <li><i class="fas fa-check"></i> Проверяйте адрес перед отправкой</li>
-                <li><i class="fas fa-check"></i> Используйте только сеть TRC-20 для USDT</li>
-                <li><i class="fas fa-check"></i> Храните адрес в безопасном месте</li>
-            </ul>
+        <div class="requisites-notice">
+            <i class="fas fa-shield-alt"></i>
+            <p>Только активные реквизиты будут доступны для пополнения</p>
+        </div>
+    </div>
+
+    <!-- Модальное окно добавления реквизита -->
+    <div class="modal-overlay" id="addRequisiteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Добавить реквизиты</h3>
+                <button class="close-modal" onclick="closeAddRequisiteModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="requisite-types">
+                <button class="type-btn active" onclick="selectRequisiteType('card')">
+                    <i class="fas fa-credit-card"></i> Карта
+                </button>
+                <button class="type-btn" onclick="selectRequisiteType('phone')">
+                    <i class="fas fa-phone"></i> СБП
+                </button>
+            </div>
+
+            <form id="requisiteForm" onsubmit="saveRequisite(event)">
+                <!-- Поля для карты -->
+                <div id="cardFields" class="requisite-fields">
+                    <div class="form-group">
+                        <label class="form-label">Банк</label>
+                        <input type="text" 
+                               class="form-input" 
+                               placeholder="Например: Тинькофф, Сбербанк"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Номер карты</label>
+                        <input type="text" 
+                               class="form-input" 
+                               placeholder="0000 0000 0000 0000"
+                               pattern="[0-9]{16}"
+                               maxlength="16"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Срок действия</label>
+                        <input type="text" 
+                               class="form-input" 
+                               placeholder="ММ/ГГ"
+                               pattern="(0[1-9]|1[0-2])\/([0-9]{2})"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">CVV</label>
+                        <input type="text" 
+                               class="form-input" 
+                               placeholder="000"
+                               pattern="[0-9]{3}"
+                               maxlength="3"
+                               required>
+                    </div>
+                </div>
+
+                <!-- Поля для СБП -->
+                <div id="phoneFields" class="requisite-fields" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">Банк</label>
+                        <input type="text" 
+                               class="form-input" 
+                               placeholder="Например: Сбербанк, Тинькофф"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Номер телефона</label>
+                        <input type="tel" 
+                               class="form-input" 
+                               placeholder="+7 (000) 000-00-00"
+                               pattern="\+7\s?[0-9]{10}"
+                               required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Максимальный лимит ($)</label>
+                    <input type="number" 
+                           class="form-input" 
+                           id="maxLimit"
+                           placeholder="1000"
+                           min="10"
+                           max="10000"
+                           step="10"
+                           required>
+                </div>
+
+                <button type="submit" class="confirm-btn">
+                    <i class="fas fa-save"></i> Сохранить реквизиты
+                </button>
+            </form>
         </div>
     </div>
 </div>

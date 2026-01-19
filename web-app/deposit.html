@@ -1,129 +1,104 @@
 <div class="page" id="depositPage">
     <div class="page-header">
-        <h2><i class="fas fa-plus-circle"></i> Пополнение</h2>
+        <h2><i class="fas fa-plus-circle"></i> Пополнение счета</h2>
     </div>
 
     <div class="deposit-content">
-        <div class="balance-info">
-            <div class="balance-label">Доступный баланс</div>
-            <div class="balance-amount" id="availableBalance">0.00$</div>
-        </div>
-
         <div class="info-card">
             <i class="fas fa-info-circle"></i>
-            <p>Для пополнения отправьте USDT на указанный адрес (только сеть TRC-20)</p>
+            <p>Пополнение баланса аккаунта</p>
         </div>
 
-        <div class="wallet-card">
-            <div class="wallet-header">
-                <div class="network-badge">
-                    <i class="fab fa-usb"></i> TRC-20
-                </div>
-                <div class="currency-badge">
-                    <i class="fas fa-dollar-sign"></i> USDT
-                </div>
-                <div class="min-amount">
-                    <i class="fas fa-arrow-up"></i> Мин: 10$
-                </div>
+        <div class="form-group">
+            <label for="depositAmount" class="form-label">
+                <i class="fas fa-coins"></i> Сумма пополнения
+            </label>
+            <div class="amount-input-container">
+                <input type="number" 
+                       id="depositAmount" 
+                       class="form-input"
+                       placeholder="0.00"
+                       min="10"
+                       max="10000"
+                       step="0.01"
+                       required>
+                <button class="max-btn" onclick="setMaxAmount()">
+                    Макс.
+                </button>
             </div>
-
-            <div class="address-section">
-                <h3><i class="fas fa-wallet"></i> Адрес для пополнения:</h3>
-                <div class="address-box">
-                    <code id="depositAddress">T9zXp9vLk8nGm3JfD2q1rW5tY7uI0oP4a6</code>
-                    <button class="copy-btn">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                </div>
-                <p class="address-hint">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Отправляйте только USDT по сети TRC-20
-                </p>
+            <div class="balance-info">
+                Доступный лимит: <span id="depositLimit">10000$</span>
             </div>
+        </div>
 
-            <div class="qr-section">
-                <h3><i class="fas fa-qrcode"></i> QR-код для пополнения:</h3>
-                <div class="qr-container">
-                    <div class="qr-placeholder">
-                        <div class="qr-grid">
-                            <div class="qr-cell black"></div><div class="qr-cell black"></div><div class="qr-cell black"></div><div class="qr-cell black"></div><div class="qr-cell black"></div>
-                            <div class="qr-cell black"></div><div class="qr-cell white"></div><div class="qr-cell white"></div><div class="qr-cell white"></div><div class="qr-cell black"></div>
-                            <div class="qr-cell black"></div><div class="qr-cell white"></div><div class="qr-cell black"></div><div class="qr-cell white"></div><div class="qr-cell black"></div>
-                            <div class="qr-cell black"></div><div class="qr-cell white"></div><div class="qr-cell white"></div><div class="qr-cell white"></div><div class="qr-cell black"></div>
-                            <div class="qr-cell black"></div><div class="qr-cell black"></div><div class="qr-cell black"></div><div class="qr-cell black"></div><div class="qr-cell black"></div>
-                        </div>
-                        <div class="qr-text">
-                            <p>Сканируйте для быстрого пополнения</p>
-                            <small>MGR12 | USDT TRC-20</small>
-                        </div>
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-credit-card"></i> Выберите способ оплаты
+            </label>
+            <div class="payment-methods">
+                <div class="payment-method active" onclick="selectPaymentMethod('card')">
+                    <div class="method-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="method-info">
+                        <h4>Банковская карта</h4>
+                        <p>Visa, Mastercard, Мир</p>
+                    </div>
+                    <div class="method-check">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                
+                <div class="payment-method" onclick="selectPaymentMethod('qiwi')">
+                    <div class="method-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="method-info">
+                        <h4>QIWI Кошелек</h4>
+                        <p>Мгновенное пополнение</p>
+                    </div>
+                    <div class="method-check">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+                
+                <div class="payment-method" onclick="selectPaymentMethod('crypto')">
+                    <div class="method-icon">
+                        <i class="fab fa-bitcoin"></i>
+                    </div>
+                    <div class="method-info">
+                        <h4>Криптовалюта</h4>
+                        <p>USDT (TRC-20)</p>
+                    </div>
+                    <div class="method-check">
+                        <i class="fas fa-check"></i>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="instructions-section">
-            <h3><i class="fas fa-list-ol"></i> Инструкция по пополнению:</h3>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <h4>Скопируйте адрес</h4>
-                        <p>Нажмите на кнопку копирования или отсканируйте QR-код</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <h4>Отправьте USDT</h4>
-                        <p>Отправьте USDT на скопированный адрес с любого кошелька</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <h4>Выберите сеть</h4>
-                        <p>Обязательно выберите сеть TRC-20 при отправке</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
-                        <h4>Дождитесь подтверждения</h4>
-                        <p>Средства поступят в течение 5-30 минут</p>
-                    </div>
-                </div>
+        <div class="fee-info">
+            <div class="fee-item">
+                <span>Сумма пополнения:</span>
+                <span class="fee-value" id="depositSum">0.00$</span>
+            </div>
+            <div class="fee-item">
+                <span>Комиссия:</span>
+                <span class="fee-value">2.5%</span>
+            </div>
+            <div class="fee-item">
+                <span>Итого к оплате:</span>
+                <span class="receive-value" id="depositTotal">0.00$</span>
             </div>
         </div>
 
-        <div class="important-notice">
-            <div class="notice-header">
-                <i class="fas fa-exclamation-circle"></i>
-                <h3>Важно!</h3>
-            </div>
-            <ul class="notice-list">
-                <li>Отправляйте только USDT (TRC-20)</li>
-                <li>Минимальная сумма пополнения: 10$</li>
-                <li>Комиссия сети оплачивается отправителем</li>
-                <li>Пополнение с бирж может занять до 1 часа</li>
-                <li>При проблемах - обратитесь в поддержку</li>
-            </ul>
-        </div>
+        <button class="confirm-btn" onclick="processDeposit()">
+            <i class="fas fa-check-circle"></i> Подтвердить пополнение
+        </button>
 
-        <div class="deposit-actions">
-            <button class="check-btn" onclick="checkDeposit()">
-                <i class="fas fa-search-dollar"></i> Проверить пополнение
-            </button>
-            <button class="support-btn" onclick="contactSupport()">
-                <i class="fas fa-headset"></i> Поддержка
-            </button>
-        </div>
-
-        <div class="transaction-status">
-            <h3><i class="fas fa-history"></i> Последние пополнения:</h3>
-            <div class="no-transactions">
-                <i class="fas fa-clock"></i>
-                <p>Нет недавних пополнений</p>
-            </div>
+        <div class="deposit-notice">
+            <i class="fas fa-shield-alt"></i>
+            <p>Средства зачисляются в течение 5-15 минут. При проблемах обращайтесь в поддержку.</p>
         </div>
     </div>
 </div>
