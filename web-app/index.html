@@ -64,14 +64,6 @@
                         <h3>Перевести</h3>
                         <p>Перевод USDT на другой аккаунт</p>
                     </div>
-
-                    <div class="card" onclick="showProfilePage()">
-                        <div class="card-icon profile">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <h3>Профиль</h3>
-                        <p>Ваш кошелек и реквизиты</p>
-                    </div>
                 </div>
 
                 <div class="stats-section">
@@ -93,79 +85,138 @@
                 </div>
             </div>
 
-            <!-- Страница профиля -->
-            <div class="page" id="profilePage">
+            <!-- Страница реквизитов -->
+            <div class="page" id="requisitesPage">
                 <div class="page-header">
-                    <h2><i class="fas fa-user-circle"></i> Мой профиль</h2>
+                    <h2><i class="fas fa-credit-card"></i> Реквизиты</h2>
                 </div>
 
-                <div class="profile-content">
-                    <div class="profile-card">
-                        <div class="profile-info">
-                            <div class="info-item">
-                                <span class="label">Ваш ID:</span>
-                                <div class="value clickable" onclick="copyUserId()">
-                                    739-228-415 <i class="fas fa-copy"></i>
+                <div class="requisites-content">
+                    <div class="info-card">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Ваши реквизиты для пополнения USDT (TRC-20)</p>
+                    </div>
+
+                    <div class="wallet-card">
+                        <div class="wallet-header">
+                            <div class="network-badge">
+                                <i class="fas fa-link"></i> TRC-20
+                            </div>
+                            <div class="currency-badge">
+                                <i class="fas fa-dollar-sign"></i> USDT
+                            </div>
+                        </div>
+
+                        <div class="address-section">
+                            <h3>Адрес для пополнения:</h3>
+                            <div class="address-box" onclick="copyAddress()">
+                                <code id="walletAddress">T9zXp9vLk8nGm3JfD2q1rW5tY7uI0oP4a6</code>
+                                <button class="copy-btn">
+                                    <i class="fas fa-copy"></i> Копировать
+                                </button>
+                            </div>
+                            <p class="address-hint">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Отправляйте только USDT (TRC-20) на этот адрес
+                            </p>
+                        </div>
+
+                        <div class="qr-section">
+                            <h3>QR-код для пополнения:</h3>
+                            <div class="qr-box">
+                                <div class="qr-display">
+                                    <i class="fas fa-qrcode"></i>
+                                    <p>QR-код вашего адреса</p>
+                                    <small>Отсканируйте для быстрого пополнения</small>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="wallet-actions">
+                            <button class="wallet-btn" onclick="shareWallet()">
+                                <i class="fas fa-share-alt"></i> Поделиться
+                            </button>
+                            <button class="wallet-btn" onclick="saveWalletInfo()">
+                                <i class="fas fa-save"></i> Сохранить
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="instructions-section">
+                        <h3><i class="fas fa-list-ol"></i> Инструкция по пополнению:</h3>
+                        <ol class="instructions-list">
+                            <li>Скопируйте адрес выше или отсканируйте QR-код</li>
+                            <li>Отправьте USDT на этот адрес с любого кошелька</li>
+                            <li>Убедитесь, что выбрали сеть TRC-20</li>
+                            <li>Средства поступят в течение 5-30 минут</li>
+                            <li>После отправки нажмите "Проверить пополнение" на главной</li>
+                        </ol>
+                    </div>
+
+                    <div class="security-info">
+                        <h3><i class="fas fa-shield-alt"></i> Меры безопасности:</h3>
+                        <ul class="security-list">
+                            <li><i class="fas fa-check"></i> Никому не передавайте приватные ключи</li>
+                            <li><i class="fas fa-check"></i> Проверяйте адрес перед отправкой</li>
+                            <li><i class="fas fa-check"></i> Используйте только сеть TRC-20 для USDT</li>
+                            <li><i class="fas fa-check"></i> Храните адрес в безопасном месте</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Страница истории -->
+            <div class="page" id="historyPage">
+                <div class="page-header">
+                    <h2><i class="fas fa-history"></i> История операций</h2>
+                </div>
+
+                <div class="history-content">
+                    <div class="history-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Пополнений</span>
+                                <span class="stat-value" id="historyDepositCount">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Выводов</span>
+                                <span class="stat-value" id="historyWithdrawCount">0</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Переводов</span>
+                                <span class="stat-value" id="historyTransferCount">0</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="wallet-section">
-                        <h3><i class="fas fa-wallet"></i> Ваш криптокошелек</h3>
-                        
-                        <div class="wallet-card">
-                            <div class="wallet-header">
-                                <div class="network-badge">
-                                    <i class="fas fa-link"></i> TRC-20
-                                </div>
-                                <div class="currency-badge">
-                                    <i class="fas fa-dollar-sign"></i> USDT
-                                </div>
-                            </div>
-
-                            <div class="address-container">
-                                <label>Адрес для пополнения:</label>
-                                <div class="address-display" onclick="copyAddress()">
-                                    <span id="walletAddress">T9zXp9vLk8nGm3JfD2q1rW5tY7uI0oP4a6</span>
-                                    <i class="fas fa-copy copy-icon"></i>
-                                </div>
-                                <p class="address-note">
-                                    <i class="fas fa-info-circle"></i>
-                                    Отправляйте только USDT по сети TRC-20
-                                </p>
-                            </div>
-
-                            <div class="qr-container">
-                                <h4>QR-код для пополнения:</h4>
-                                <div class="qr-code">
-                                    <div class="qr-placeholder">
-                                        <i class="fas fa-qrcode"></i>
-                                        <p>QR-код сгенерирован</p>
-                                        <small>Отсканируйте для быстрого пополнения</small>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="wallet-actions">
-                                <button class="wallet-btn" onclick="shareWallet()">
-                                    <i class="fas fa-share-alt"></i> Поделиться
-                                </button>
-                                <button class="wallet-btn" onclick="saveWalletInfo()">
-                                    <i class="fas fa-save"></i> Сохранить
-                                </button>
-                            </div>
+                    <div class="transactions-list" id="transactionsList">
+                        <div class="no-transactions">
+                            <i class="fas fa-inbox"></i>
+                            <h3>История пуста</h3>
+                            <p>Здесь будут отображаться все ваши операции</p>
                         </div>
+                    </div>
 
-                        <div class="security-info">
-                            <h4><i class="fas fa-shield-alt"></i> Меры безопасности</h4>
-                            <ul class="security-list">
-                                <li><i class="fas fa-check"></i> Никому не передавайте приватные ключи</li>
-                                <li><i class="fas fa-check"></i> Проверяйте адрес перед отправкой</li>
-                                <li><i class="fas fa-check"></i> Используйте только сеть TRC-20 для USDT</li>
-                                <li><i class="fas fa-check"></i> Храните адрес в безопасном месте</li>
-                            </ul>
-                        </div>
+                    <div class="history-actions">
+                        <button class="history-btn" onclick="loadHistory()">
+                            <i class="fas fa-sync-alt"></i> Обновить историю
+                        </button>
+                        <button class="history-btn" onclick="clearHistory()">
+                            <i class="fas fa-trash-alt"></i> Очистить историю
+                        </button>
                     </div>
                 </div>
             </div>
@@ -423,11 +474,11 @@
 
         <!-- Нижнее меню -->
         <nav class="bottom-nav">
-            <a href="#" class="nav-item" onclick="showProfilePage()">
-                <i class="fas fa-user"></i>
-                <span>Профиль</span>
+            <a href="#" class="nav-item" onclick="showRequisitesPage()">
+                <i class="fas fa-credit-card"></i>
+                <span>Реквизиты</span>
             </a>
-            <a href="#" class="nav-item" onclick="showHistory()">
+            <a href="#" class="nav-item" onclick="showHistoryPage()">
                 <i class="fas fa-history"></i>
                 <span>История</span>
             </a>
