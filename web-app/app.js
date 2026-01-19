@@ -806,3 +806,606 @@ function initPageSpecificFunctions(pageName) {
             break;
     }
 }
+
+// Функции для реквизитов
+
+// Форматирование номера карты
+function formatCardNumber(input) {
+    let value = input.value.replace(/\D/g, '');
+    value = value.substring(0, 16);
+    
+    let formatted = '';
+    for (let i = 0; i < value.length; i++) {
+        if (i > 0 && i % 4 === 0) {
+            formatted += ' ';
+        }
+        formatted += value[i];
+    }
+    
+    input.value = formatted;
+}
+
+// Форматирование номера телефона
+function formatPhoneNumber(input) {
+    let value = input.value.replace(/\D/g, '');
+    
+    if (value.startsWith('7') || value.startsWith('8')) {
+        value = '7' + value.substring(1);
+    } else if (value.startsWith('9')) {
+        value = '7' + value;
+    }
+    
+    value = value.substring(0, 11);
+    
+    let formatted = '';
+    if (value.length > 0) {
+        formatted += '+7';
+        if (value.length > 1) {
+            formatted += ' (' + value.substring(1, 4);
+        }
+        if (value.length > 4) {
+            formatted += ') ' + value.substring(4, 7);
+        }
+        if (value.length > 7) {
+            formatted += '-' + value.substring(7, 9);
+        }
+        if (value.length > 9) {
+            formatted += '-' + value.substring(9, 11);
+        }
+    }
+    
+    input.value = formatted;
+}
+
+// Показать/скрыть модальное окно
+function showAddRequisiteModal() {
+    document.getElementById('addRequisiteModal').style.display = 'flex';
+    document.getElementById('requisiteForm').reset();
+    selectRequisiteType('card');
+}
+
+function closeAddRequisiteModal() {
+    document.getElementById('addRequisiteModal').style.display = 'none';
+}
+
+// Выбор типа реквизита
+function selectRequisiteType(type) {
+    document.querySelectorAll('.type-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    if (type === 'card') {
+        document.getElementById('cardFields').style.display = 'block';
+        document.getElementById('phoneFields').style.display = 'none';
+        document.getElementById('cardNumber').required = true;
+        document.getElementById('phoneNumber').required = false;
+    } else {
+        document.getElementById('cardFields').style.display = 'none';
+        document.getElementById('phoneFields').style.display = 'block';
+        document.getElementById('cardNumber').required = false;
+        document.getElementById('phoneNumber').required = true;
+    }
+}
+
+// Сохранение реквизита
+function saveRequisite(event) {
+    event.preventDefault();
+    
+    const type = document.querySelector('.type-btn.active').textContent.includes('карта') ? 'card' : 'phone';
+    const bankSelect = document.querySelector('.bank-select select');
+    const bank = bankSelect.options[bankSelect.selectedIndex].text;
+    const singleLimit = document.getElementById('singleLimit').value;
+    const dailyLimit = document.getElementById('dailyLimit').value;
+    
+    let details;
+    if (type === 'card') {
+        const cardNumber = document.getElementById('cardNumber').value;
+        const last4 = cardNumber.replace(/\s/g, '').slice(-4);
+        details = `Карта ···${last4}`;
+    } else {
+        const phone = document.getElementById('phoneNumber').value;
+        const last4 = phone.replace(/\D/g, '').slice(-4);
+        details = `СБП ···${last4}`;
+    }
+    
+    // Добавляем новый реквизит
+    addRequisiteToList({
+        id: Date.now(),
+        type: type,
+        bank: bank,
+        details: details,
+        singleLimit: parseInt(singleLimit),
+        dailyLimit: parseInt(dailyLimit),
+        isActive: true
+    });
+    
+    closeAddRequisiteModal();
+    showNotification('Реквизиты успешно добавлены', 'success');
+}
+
+// Добавление реквизита в список
+function addRequisiteToList(requisite) {
+    const requisitesList = document.getElementById('requisitesList');
+    const noRequisites = document.getElementById('noRequisites');
+    
+    if (noRequisites) {
+        noRequisites.style.display = 'none';
+    }
+    
+    const requisiteItem = document.createElement('div');
+    requisiteItem.className = 'requisite-item';
+    requisiteItem.id = 'requisite-' + requisite.id;
+    
+    requisiteItem.innerHTML = `
+        <div class="requisite-header">
+            <div class="requisite-type ${requisite.type}">
+                ${requisite.type === 'card' ? '<i class="fas fa-credit-card"></i>' : '<i class="fas fa-phone"></i>'}
+                ${requisite.details}
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" ${requisite.isActive ? 'checked' : ''} onchange="toggleRequisite(${requisite.id}, this.checked)">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        
+        <div class="requisite-info">
+            <div class="requisite-row">
+                <span class="requisite-label">Банк:</span>
+                <span class="requisite-value">${requisite.bank}</span>
+            </div>
+            <div class="requisite-row">
+                <span class="requisite-label">Лимит сделки:</span>
+                <span class="requisite-value">${formatCurrency(requisite.singleLimit)} ₽</span>
+            </div>
+            <div class="requisite-row">
+                <span class="requisite-label">Дневной лимит:</span>
+                <span class="requisite-value">${formatCurrency(requisite.dailyLimit)} ₽</span>
+            </div>
+            <div class="requisite-row">
+                <span class="requisite-label">Статус:</span>
+                <span class="requisite-value status ${requisite.isActive ? 'active' : 'inactive'}">
+                    ${requisite.isActive ? 'Активен' : 'Неактивен'}
+                </span>
+            </div>
+        </div>
+        
+        <div class="requisite-actions">
+            <button class="action-btn edit-btn" onclick="editRequisite(${requisite.id})">
+                <i class="fas fa-edit"></i> Изменить
+            </button>
+            <button class="action-btn delete-btn" onclick="deleteRequisite(${requisite.id})">
+                <i class="fas fa-trash"></i> Удалить
+            </button>
+        </div>
+    `;
+    
+    requisitesList.appendChild(requisiteItem);
+}
+
+// Форматирование валюты
+function formatCurrency(amount) {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+// Включение/выключение реквизита
+function toggleRequisite(id, isActive) {
+    const requisite = document.getElementById('requisite-' + id);
+    const statusElement = requisite.querySelector('.status');
+    
+    if (isActive) {
+        statusElement.textContent = 'Активен';
+        statusElement.className = 'requisite-value status active';
+        showNotification('Реквизит активирован', 'success');
+    } else {
+        statusElement.textContent = 'Неактивен';
+        statusElement.className = 'requisite-value status inactive';
+        showNotification('Реквизит деактивирован', 'warning');
+    }
+}
+
+// Удаление реквизита
+function deleteRequisite(id) {
+    if (confirm('Вы уверены, что хотите удалить эти реквизиты?')) {
+        const requisite = document.getElementById('requisite-' + id);
+        requisite.remove();
+        
+        // Проверяем, есть ли еще реквизиты
+        const requisitesList = document.getElementById('requisitesList');
+        const noRequisites = document.getElementById('noRequisites');
+        
+        if (requisitesList.children.length === 1 && noRequisites) {
+            noRequisites.style.display = 'block';
+        }
+        
+        showNotification('Реквизиты удалены', 'success');
+    }
+}
+
+// Редактирование реквизита
+function editRequisite(id) {
+    showNotification('Функция редактирования в разработке', 'info');
+}
+
+// Функции для реквизитов
+
+// Форматирование номера карты
+function formatCardNumber(input) {
+    let value = input.value.replace(/\D/g, '');
+    value = value.substring(0, 16);
+    
+    let formatted = '';
+    for (let i = 0; i < value.length; i++) {
+        if (i > 0 && i % 4 === 0) {
+            formatted += ' ';
+        }
+        formatted += value[i];
+    }
+    
+    input.value = formatted;
+}
+
+// Форматирование срока действия карты
+function formatExpiry(input) {
+    let value = input.value.replace(/\D/g, '');
+    value = value.substring(0, 4);
+    
+    if (value.length >= 2) {
+        value = value.substring(0, 2) + '/' + value.substring(2);
+    }
+    
+    input.value = value;
+}
+
+// Форматирование номера телефона
+function formatPhoneNumber(input) {
+    let value = input.value.replace(/\D/g, '');
+    
+    if (value.startsWith('7') || value.startsWith('8')) {
+        value = '7' + value.substring(1);
+    } else if (value.startsWith('9')) {
+        value = '7' + value;
+    }
+    
+    value = value.substring(0, 11);
+    
+    let formatted = '';
+    if (value.length > 0) {
+        formatted += '+7';
+        if (value.length > 1) {
+            formatted += ' (' + value.substring(1, 4);
+        }
+        if (value.length > 4) {
+            formatted += ') ' + value.substring(4, 7);
+        }
+        if (value.length > 7) {
+            formatted += '-' + value.substring(7, 9);
+        }
+        if (value.length > 9) {
+            formatted += '-' + value.substring(9, 11);
+        }
+    }
+    
+    input.value = formatted;
+}
+
+// Показать/скрыть модальное окно
+function showAddRequisiteModal() {
+    document.getElementById('addRequisiteModal').style.display = 'flex';
+    document.getElementById('requisiteForm').reset();
+    selectRequisiteType('card');
+}
+
+function closeAddRequisiteModal() {
+    document.getElementById('addRequisiteModal').style.display = 'none';
+}
+
+// Выбор типа реквизита
+function selectRequisiteType(type) {
+    document.querySelectorAll('.type-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    if (type === 'card') {
+        document.getElementById('cardFields').style.display = 'block';
+        document.getElementById('phoneFields').style.display = 'none';
+        document.getElementById('cardNumber').required = true;
+        document.getElementById('phoneNumber').required = false;
+        document.getElementById('cardExpiry').required = true;
+    } else {
+        document.getElementById('cardFields').style.display = 'none';
+        document.getElementById('phoneFields').style.display = 'block';
+        document.getElementById('cardNumber').required = false;
+        document.getElementById('phoneNumber').required = true;
+        document.getElementById('cardExpiry').required = false;
+    }
+}
+
+// Сохранение реквизита
+function saveRequisite(event) {
+    event.preventDefault();
+    
+    const type = document.querySelector('.type-btn.active').textContent.includes('карта') ? 'card' : 'phone';
+    
+    let bank, details, fullDetails;
+    
+    if (type === 'card') {
+        const bankSelect = document.getElementById('cardBank');
+        bank = bankSelect.options[bankSelect.selectedIndex].text;
+        const cardNumber = document.getElementById('cardNumber').value;
+        const cardExpiry = document.getElementById('cardExpiry').value;
+        
+        // Маскируем номер карты, оставляя первые 6 и последние 4 цифры
+        const cleanNumber = cardNumber.replace(/\s/g, '');
+        const maskedNumber = cleanNumber.substring(0, 6) + '••••••' + cleanNumber.substring(12);
+        const formattedNumber = maskedNumber.replace(/(.{4})/g, '$1 ').trim();
+        
+        details = `Карта ${formattedNumber}`;
+        fullDetails = `Карта ${cardNumber} (${cardExpiry})`;
+    } else {
+        const bankSelect = document.getElementById('phoneBank');
+        bank = bankSelect.options[bankSelect.selectedIndex].text;
+        const phone = document.getElementById('phoneNumber').value;
+        
+        // Маскируем номер телефона
+        const cleanPhone = phone.replace(/\D/g, '');
+        const maskedPhone = '+7 ••• ••• ••' + cleanPhone.slice(-2);
+        
+        details = `СБП ${maskedPhone}`;
+        fullDetails = `СБП ${phone}`;
+    }
+    
+    const singleLimit = document.getElementById('singleLimit').value;
+    const dailyLimit = document.getElementById('dailyLimit').value;
+    
+    // Добавляем новый реквизит
+    addRequisiteToList({
+        id: Date.now(),
+        type: type,
+        bank: bank,
+        details: details,
+        fullDetails: fullDetails,
+        singleLimit: parseInt(singleLimit),
+        dailyLimit: parseInt(dailyLimit),
+        isActive: true,
+        usedToday: 0, // Использовано сегодня
+        lastReset: new Date().toISOString().split('T')[0] // Дата последнего сброса
+    });
+    
+    closeAddRequisiteModal();
+    showNotification('Реквизиты успешно добавлены', 'success');
+}
+
+// Добавление реквизита в список
+function addRequisiteToList(requisite) {
+    const requisitesList = document.getElementById('requisitesList');
+    const noRequisites = document.getElementById('noRequisites');
+    
+    if (noRequisites) {
+        noRequisites.style.display = 'none';
+    }
+    
+    const requisiteItem = document.createElement('div');
+    requisiteItem.className = 'requisite-item';
+    requisiteItem.id = 'requisite-' + requisite.id;
+    
+    // Проверяем дневной лимит
+    const today = new Date().toISOString().split('T')[0];
+    const isLimitReset = requisite.lastReset !== today;
+    const availableToday = isLimitReset ? requisite.dailyLimit : Math.max(0, requisite.dailyLimit - requisite.usedToday);
+    
+    requisiteItem.innerHTML = `
+        <div class="requisite-header">
+            <div class="requisite-type ${requisite.type}">
+                ${requisite.type === 'card' ? '<i class="fas fa-credit-card"></i>' : '<i class="fas fa-phone"></i>'}
+                ${requisite.details}
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" ${requisite.isActive ? 'checked' : ''} onchange="toggleRequisite(${requisite.id}, this.checked)">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        
+        <div class="requisite-info">
+            <div class="requisite-row">
+                <span class="requisite-label">Банк:</span>
+                <span class="requisite-value">${requisite.bank}</span>
+            </div>
+            <div class="requisite-row">
+                <span class="requisite-label">Реквизиты:</span>
+                <span class="requisite-value full-details" onclick="showFullDetails(${requisite.id})">
+                    ${requisite.fullDetails}
+                    <i class="fas fa-eye view-icon"></i>
+                </span>
+            </div>
+            <div class="requisite-row">
+                <span class="requisite-label">Лимит сделки:</span>
+                <span class="requisite-value">${formatCurrency(requisite.singleLimit)} ₽</span>
+            </div>
+            <div class="requisite-row">
+                <span class="requisite-label">Дневной лимит:</span>
+                <span class="requisite-value">${formatCurrency(requisite.dailyLimit)} ₽</span>
+            </div>
+            <div class="requisite-row">
+                <span class="requisite-label">Использовано сегодня:</span>
+                <span class="requisite-value">${formatCurrency(requisite.usedToday)} ₽</span>
+            </div>
+            <div class="requisite-row">
+                <span class="requisite-label">Доступно сегодня:</span>
+                <span class="requisite-value available-amount ${availableToday > 0 ? 'available' : 'exceeded'}">
+                    ${formatCurrency(availableToday)} ₽
+                </span>
+            </div>
+            <div class="requisite-row">
+                <span class="requisite-label">Статус:</span>
+                <span class="requisite-value status ${requisite.isActive ? 'active' : 'inactive'}">
+                    ${requisite.isActive ? 'Активен' : 'Неактивен'}
+                </span>
+            </div>
+        </div>
+        
+        <div class="requisite-actions">
+            <button class="action-btn edit-btn" onclick="editRequisite(${requisite.id})">
+                <i class="fas fa-edit"></i> Изменить
+            </button>
+            <button class="action-btn delete-btn" onclick="deleteRequisite(${requisite.id})">
+                <i class="fas fa-trash"></i> Удалить
+            </button>
+        </div>
+    `;
+    
+    requisitesList.appendChild(requisiteItem);
+}
+
+// Показать полные реквизиты
+function showFullDetails(id) {
+    const requisiteItem = document.getElementById('requisite-' + id);
+    const fullDetailsElement = requisiteItem.querySelector('.full-details');
+    
+    // Если уже показаны полные реквизиты, скрываем их
+    if (fullDetailsElement.classList.contains('showing-full')) {
+        // Возвращаем маскированные данные
+        const requisite = getRequisiteById(id);
+        if (requisite) {
+            fullDetailsElement.innerHTML = `
+                ${requisite.details}
+                <i class="fas fa-eye view-icon"></i>
+            `;
+            fullDetailsElement.classList.remove('showing-full');
+        }
+    } else {
+        // Показываем полные реквизиты
+        const requisite = getRequisiteById(id);
+        if (requisite) {
+            fullDetailsElement.innerHTML = `
+                ${requisite.fullDetails}
+                <i class="fas fa-eye-slash view-icon"></i>
+            `;
+            fullDetailsElement.classList.add('showing-full');
+            showNotification('Нажмите еще раз чтобы скрыть', 'info', 2000);
+        }
+    }
+}
+
+// Получить реквизит по ID (заглушка)
+function getRequisiteById(id) {
+    // В реальном приложении здесь будет запрос к хранилищу данных
+    return {
+        id: id,
+        type: 'card',
+        details: 'Карта 4455 66•• •••• 8899',
+        fullDetails: 'Карта 4455 6677 8899 0011 (12/25)'
+    };
+}
+
+// Форматирование валюты
+function formatCurrency(amount) {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+// Включение/выключение реквизита
+function toggleRequisite(id, isActive) {
+    const requisite = document.getElementById('requisite-' + id);
+    const statusElement = requisite.querySelector('.status');
+    
+    if (isActive) {
+        statusElement.textContent = 'Активен';
+        statusElement.className = 'requisite-value status active';
+        showNotification('Реквизит активирован', 'success');
+    } else {
+        statusElement.textContent = 'Неактивен';
+        statusElement.className = 'requisite-value status inactive';
+        showNotification('Реквизит деактивирован', 'warning');
+    }
+}
+
+// Удаление реквизита
+function deleteRequisite(id) {
+    if (confirm('Вы уверены, что хотите удалить эти реквизиты?')) {
+        const requisite = document.getElementById('requisite-' + id);
+        requisite.remove();
+        
+        // Проверяем, есть ли еще реквизиты
+        const requisitesList = document.getElementById('requisitesList');
+        const noRequisites = document.getElementById('noRequisites');
+        
+        if (requisitesList.children.length === 1 && noRequisites) {
+            noRequisites.style.display = 'block';
+        }
+        
+        showNotification('Реквизиты удалены', 'success');
+    }
+}
+
+// Редактирование реквизита
+function editRequisite(id) {
+    showNotification('Функция редактирования в разработке', 'info');
+}
+
+// ============ ИСТОРИЯ ============
+
+// Загрузка истории операций
+function loadHistory() {
+    showNotification('Обновляем историю операций...', 'info');
+    
+    // Имитация загрузки
+    setTimeout(() => {
+        showNotification('История успешно обновлена', 'success');
+        
+        // Здесь можно добавить реальную загрузку данных
+        // updateHistoryData();
+    }, 1500);
+}
+
+// Обновление данных истории
+function updateHistoryData() {
+    // В реальном приложении здесь будет загрузка данных с сервера
+    console.log("Обновление данных истории...");
+}
+
+// Показать уведомление с таймером
+function showNotification(message, type = 'success', duration = 3000) {
+    const colors = {
+        success: '#00ff88',
+        info: '#667eea',
+        warning: '#ffa500',
+        error: '#ff4757'
+    };
+    
+    const icons = {
+        success: 'fa-check-circle',
+        info: 'fa-info-circle',
+        warning: 'fa-exclamation-triangle',
+        error: 'fa-times-circle'
+    };
+    
+    // Удаляем старое уведомление если есть
+    const oldNotification = document.querySelector('.notification');
+    if (oldNotification) {
+        oldNotification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => oldNotification.remove(), 300);
+    }
+    
+    // Создаем новое уведомление
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.style.background = `linear-gradient(135deg, ${colors[type]} 0%, ${colors[type]}80 100%)`;
+    notification.style.borderLeft = `4px solid ${colors[type]}`;
+    notification.style.color = type === 'warning' ? '#000' : '#fff';
+    
+    notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fas ${icons[type]}" style="font-size: 18px;"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Удаляем через указанное время
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => notification.remove(), 300);
+    }, duration);
+}

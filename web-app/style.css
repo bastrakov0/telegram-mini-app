@@ -1530,3 +1530,352 @@ input:checked + .toggle-slider:before {
 .payment-method.active .method-check {
     opacity: 1;
 }
+
+/* Стили для реквизитов */
+.no-requisites {
+    text-align: center;
+    padding: 50px 20px;
+    color: #666;
+}
+
+.no-requisites i {
+    font-size: 60px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.no-requisites h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #aaa;
+}
+
+.no-requisites p {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Стили для банковского селекта */
+.bank-select select {
+    width: 100%;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.bank-select select:focus {
+    outline: none;
+    border-color: #667eea;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.bank-select option {
+    background: #0a0a0a;
+    color: #fff;
+}
+
+/* Секция лимитов */
+.limit-section {
+    margin: 25px 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.limit-section h4 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.limit-info {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+/* Статус реквизита */
+.status {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status.active {
+    background: rgba(0, 255, 136, 0.1);
+    color: #00ff88;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.status.inactive {
+    background: rgba(255, 71, 87, 0.1);
+    color: #ff4757;
+    border: 1px solid rgba(255, 71, 87, 0.3);
+}
+
+/* Кнопки действий реквизита */
+.requisite-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.action-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.3s;
+}
+
+.edit-btn {
+    background: rgba(102, 126, 234, 0.1);
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    color: #667eea;
+}
+
+.delete-btn {
+    background: rgba(255, 71, 87, 0.1);
+    border: 1px solid rgba(255, 71, 87, 0.2);
+    color: #ff4757;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+}
+
+.edit-btn:hover {
+    background: rgba(102, 126, 234, 0.2);
+}
+
+.delete-btn:hover {
+    background: rgba(255, 71, 87, 0.2);
+}
+
+/* Модальные кнопки */
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.cancel-btn {
+    flex: 1;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Стили для карт и СБП одинакового размера */
+.requisite-type.card,
+.requisite-type.phone {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none; /* Некликабельный */
+    user-select: none;
+}
+
+.requisite-type.card {
+    background: rgba(102, 126, 234, 0.2);
+    color: #667eea;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.requisite-type.phone {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+    .requisite-actions {
+        flex-direction: column;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .limit-section {
+        padding: 15px;
+    }
+}
+
+/* Стили для полных реквизитов */
+.full-details {
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.full-details:hover {
+    color: #667eea;
+}
+
+.view-icon {
+    font-size: 12px;
+    color: #667eea;
+}
+
+.full-details.showing-full .view-icon {
+    color: #ff4757;
+}
+
+/* Сумма доступная сегодня */
+.available-amount {
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 8px;
+}
+
+.available-amount.available {
+    background: rgba(0, 255, 136, 0.1);
+    color: #00ff88;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.available-amount.exceeded {
+    background: rgba(255, 71, 87, 0.1);
+    color: #ff4757;
+    border: 1px solid rgba(255, 71, 87, 0.3);
+}
+
+/* Уведомления */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 12px;
+    z-index: 10000;
+    animation: slideIn 0.3s ease-out;
+    font-weight: 600;
+    max-width: 300px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes slideIn {
+    from { 
+        transform: translateX(100%); 
+        opacity: 0; 
+    }
+    to { 
+        transform: translateX(0); 
+        opacity: 1; 
+    }
+}
+
+@keyframes slideOut {
+    from { 
+        transform: translateX(0); 
+        opacity: 1; 
+    }
+    to { 
+        transform: translateX(100%); 
+        opacity: 0; 
+    }
+}
+
+/* Информация о лимите */
+.limit-info p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 5px;
+}
+
+.limit-info i {
+    font-size: 10px;
+}
+
+/* Стили для кнопки обновления истории */
+.history-btn {
+    width: 100%;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s;
+    margin-top: 20px;
+}
+
+.history-btn:hover {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: #667eea;
+    transform: translateY(-2px);
+}
+
+.history-btn i {
+    animation: none;
+}
+
+.history-btn:hover i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Адаптивные стили */
+@media (max-width: 480px) {
+    .notification {
+        left: 20px;
+        right: 20px;
+        max-width: none;
+    }
+    
+    .full-details {
+        word-break: break-all;
+        font-size: 13px;
+    }
+}

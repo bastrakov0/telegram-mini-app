@@ -4,85 +4,13 @@
     </div>
 
     <div class="requisites-content">
-        <div class="info-card">
-            <i class="fas fa-info-circle"></i>
-            <p>Добавьте реквизиты для быстрых переводов</p>
-        </div>
-
         <!-- Список реквизитов -->
         <div class="requisites-list" id="requisitesList">
-            <div class="requisite-item">
-                <div class="requisite-header">
-                    <div class="requisite-type card">
-                        <i class="fas fa-credit-card"></i> Банковская карта
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-                
-                <div class="requisite-info">
-                    <div class="requisite-row">
-                        <span class="requisite-label">Банк:</span>
-                        <span class="requisite-value">Тинькофф</span>
-                    </div>
-                    <div class="requisite-row">
-                        <span class="requisite-label">Номер карты:</span>
-                        <span class="requisite-value">**** 4837</span>
-                    </div>
-                    <div class="requisite-row">
-                        <span class="requisite-label">Лимит:</span>
-                        <span class="requisite-value" id="cardLimit1">500$</span>
-                    </div>
-                </div>
-                
-                <div class="limit-control">
-                    <span class="limit-value">Лимит: <span id="limitValue1">500</span>$</span>
-                    <input type="range" 
-                           min="10" 
-                           max="5000" 
-                           value="500" 
-                           class="limit-slider"
-                           oninput="updateLimit(1, this.value)">
-                </div>
-            </div>
-
-            <div class="requisite-item">
-                <div class="requisite-header">
-                    <div class="requisite-type phone">
-                        <i class="fas fa-phone"></i> СБП
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-                
-                <div class="requisite-info">
-                    <div class="requisite-row">
-                        <span class="requisite-label">Банк:</span>
-                        <span class="requisite-value">Сбербанк</span>
-                    </div>
-                    <div class="requisite-row">
-                        <span class="requisite-label">Телефон:</span>
-                        <span class="requisite-value">+7 *** *** ** 45</span>
-                    </div>
-                    <div class="requisite-row">
-                        <span class="requisite-label">Лимит:</span>
-                        <span class="requisite-value" id="cardLimit2">1000$</span>
-                    </div>
-                </div>
-                
-                <div class="limit-control">
-                    <span class="limit-value">Лимит: <span id="limitValue2">1000</span>$</span>
-                    <input type="range" 
-                           min="10" 
-                           max="10000" 
-                           value="1000" 
-                           class="limit-slider"
-                           oninput="updateLimit(2, this.value)">
-                </div>
+            <!-- Здесь будут добавляться реквизиты -->
+            <div class="no-requisites" id="noRequisites">
+                <i class="fas fa-credit-card"></i>
+                <h3>Нет реквизитов</h3>
+                <p>Добавьте реквизиты для удобных переводов</p>
             </div>
         </div>
 
@@ -90,11 +18,6 @@
         <button class="add-requisite-btn" onclick="showAddRequisiteModal()">
             <i class="fas fa-plus"></i> Добавить реквизиты
         </button>
-
-        <div class="requisites-notice">
-            <i class="fas fa-shield-alt"></i>
-            <p>Только активные реквизиты будут доступны для пополнения</p>
-        </div>
     </div>
 
     <!-- Модальное окно добавления реквизита -->
@@ -109,10 +32,10 @@
 
             <div class="requisite-types">
                 <button class="type-btn active" onclick="selectRequisiteType('card')">
-                    <i class="fas fa-credit-card"></i> Карта
+                    <i class="fas fa-credit-card"></i> Банковская карта
                 </button>
                 <button class="type-btn" onclick="selectRequisiteType('phone')">
-                    <i class="fas fa-phone"></i> СБП
+                    <i class="fas fa-phone"></i> СБП по номеру
                 </button>
             </div>
 
@@ -121,19 +44,29 @@
                 <div id="cardFields" class="requisite-fields">
                     <div class="form-group">
                         <label class="form-label">Банк</label>
-                        <input type="text" 
-                               class="form-input" 
-                               placeholder="Например: Тинькофф, Сбербанк"
-                               required>
+                        <div class="bank-select">
+                            <select class="form-input" id="cardBank" required>
+                                <option value="">Выберите банк</option>
+                                <option value="tinkoff">Тинькофф</option>
+                                <option value="sber">Сбербанк</option>
+                                <option value="vtb">ВТБ</option>
+                                <option value="alfa">Альфа-Банк</option>
+                                <option value="gazprom">Газпромбанк</option>
+                                <option value="raiff">Райффайзенбанк</option>
+                                <option value="other">Другой банк</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">Номер карты</label>
                         <input type="text" 
                                class="form-input" 
+                               id="cardNumber"
                                placeholder="0000 0000 0000 0000"
                                pattern="[0-9]{16}"
-                               maxlength="16"
+                               maxlength="19"
+                               oninput="formatCardNumber(this)"
                                required>
                     </div>
                     
@@ -141,18 +74,11 @@
                         <label class="form-label">Срок действия</label>
                         <input type="text" 
                                class="form-input" 
+                               id="cardExpiry"
                                placeholder="ММ/ГГ"
                                pattern="(0[1-9]|1[0-2])\/([0-9]{2})"
-                               required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">CVV</label>
-                        <input type="text" 
-                               class="form-input" 
-                               placeholder="000"
-                               pattern="[0-9]{3}"
-                               maxlength="3"
+                               oninput="formatExpiry(this)"
+                               maxlength="5"
                                required>
                     </div>
                 </div>
@@ -161,37 +87,71 @@
                 <div id="phoneFields" class="requisite-fields" style="display: none;">
                     <div class="form-group">
                         <label class="form-label">Банк</label>
-                        <input type="text" 
-                               class="form-input" 
-                               placeholder="Например: Сбербанк, Тинькофф"
-                               required>
+                        <div class="bank-select">
+                            <select class="form-input" id="phoneBank" required>
+                                <option value="">Выберите банк</option>
+                                <option value="sber">Сбербанк</option>
+                                <option value="tinkoff">Тинькофф</option>
+                                <option value="vtb">ВТБ</option>
+                                <option value="alfa">Альфа-Банк</option>
+                                <option value="gazprom">Газпромбанк</option>
+                                <option value="other">Другой банк</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">Номер телефона</label>
                         <input type="tel" 
                                class="form-input" 
+                               id="phoneNumber"
                                placeholder="+7 (000) 000-00-00"
-                               pattern="\+7\s?[0-9]{10}"
+                               pattern="\+7\s?\([0-9]{3}\)\s[0-9]{3}-[0-9]{2}-[0-9]{2}"
+                               oninput="formatPhoneNumber(this)"
+                               maxlength="18"
                                required>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Максимальный лимит ($)</label>
-                    <input type="number" 
-                           class="form-input" 
-                           id="maxLimit"
-                           placeholder="1000"
-                           min="10"
-                           max="10000"
-                           step="10"
-                           required>
+                <div class="limit-section">
+                    <h4><i class="fas fa-chart-line"></i> Настройка лимитов</h4>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Лимит одной сделки (₽)</label>
+                        <input type="number" 
+                               class="form-input" 
+                               id="singleLimit"
+                               placeholder="10000"
+                               min="1000"
+                               max="500000"
+                               step="1000"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Дневной лимит (₽)</label>
+                        <div class="limit-info">
+                            <p><i class="far fa-clock"></i> Работает с 00:00 до 23:59 по МСК</p>
+                        </div>
+                        <input type="number" 
+                               class="form-input" 
+                               id="dailyLimit"
+                               placeholder="50000"
+                               min="5000"
+                               max="2000000"
+                               step="1000"
+                               required>
+                    </div>
                 </div>
 
-                <button type="submit" class="confirm-btn">
-                    <i class="fas fa-save"></i> Сохранить реквизиты
-                </button>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeAddRequisiteModal()">
+                        Отмена
+                    </button>
+                    <button type="submit" class="confirm-btn">
+                        <i class="fas fa-save"></i> Сохранить
+                    </button>
+                </div>
             </form>
         </div>
     </div>
