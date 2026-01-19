@@ -17,192 +17,189 @@ let transferCount = 0;
 const walletAddress = "T9zXp9vLk8nGm3JfD2q1rW5tY7uI0oP4a6";
 const userId = "739-228-415";
 
+let currentPage = 'home';
+
 // Инициализация приложения
-function initApp() {
+async function initApp() {
     console.log("Инициализация приложения MGR_12...");
     
-    // Устанавливаем начальное состояние
-    showPage('homePage');
-    updateBalanceDisplay();
-    updateStats();
-    setupEventListeners();
+    // Загружаем главную страницу
+    await loadPage('home');
     
-    // Начальная анимация
-    setTimeout(() => {
-        document.querySelectorAll('.card').forEach(card => {
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        });
-    }, 300);
-    
-    // Прячем кнопку "Назад" на главной
-    updateBackButton();
+    // Инициализируем общие функции
+    initCommonFunctions();
     
     console.log("Приложение инициализировано");
 }
 
-// Обновление отображения баланса
-function updateBalanceDisplay() {
-    document.getElementById('currentBalance').textContent = balance.toFixed(2) + '$';
-    document.getElementById('availableBalance').textContent = balance.toFixed(2) + '$';
-    document.getElementById('transferBalance').textContent = balance.toFixed(2) + '$';
-}
-
-// Обновление статистики
-function updateStats() {
-    document.getElementById('depositCount').textContent = depositCount;
-    document.getElementById('withdrawCount').textContent = withdrawCount;
-    document.getElementById('transferCount').textContent = transferCount;
-    document.getElementById('historyDepositCount').textContent = depositCount;
-    document.getElementById('historyWithdrawCount').textContent = withdrawCount;
-    document.getElementById('historyTransferCount').textContent = transferCount;
-}
-
-// Навигация по страницам
-function showPage(pageId) {
-    console.log("Переход на страницу:", pageId);
+// Динамическая загрузка страниц
+async function loadPage(pageName) {
+    console.log("Загрузка страницы:", pageName);
     
-    // Скрываем все страницы
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-        page.style.display = 'none';
+    // Показываем индикатор загрузки
+    showLoading(true);
+    
+    try {
+        // Загружаем HTML страницы
+        const response = await fetch(`${pageName}.html`);
+        if (!response.ok) throw new Error('Страница не найдена');
+        
+        const html = await response.text();
+        
+        // Вставляем контент на страницу
+        document.getElementById('mainContent').innerHTML = html;
+        
+        // Обновляем текущую страницу
+        currentPage = pageName;
+        
+        // Обновляем UI
+        updateUI();
+        
+        // Инициализируем специфичные для страницы функции
+        initPageSpecificFunctions(pageName);
+        
+        // Прокручиваем вверх
+        window.scrollTo(0, 0);
+        
+    } catch (error) {
+        console.error('Ошибка загрузки страницы:', error);
+        showError('Не удалось загрузить страницу');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Показать/скрыть индикатор загрузки
+function showLoading(show) {
+    const loading = document.querySelector('.loading');
+    if (loading) {
+        loading.style.display = show ? 'flex' : 'none';
+    }
+}
+
+// Показать ошибку
+function showError(message) {
+    document.getElementById('mainContent').innerHTML = `
+        <div class="error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Ошибка</h3>
+            <p>${message}</p>
+            <button onclick="loadPage('home')">Вернуться на главную</button>
+        </div>
+    `;
+}
+
+// Обновление UI (кнопка Назад, меню)
+function updateUI() {
+    // Кнопка Назад
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.style.display = currentPage === 'home' ? 'none' : 'flex';
+    }
+    
+    // Нижнее меню
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
     });
     
-    // Показываем нужную страницу
-    const targetPage = document.getElementById(pageId);
-    if (targetPage) {
-        targetPage.style.display = 'block';
-        setTimeout(() => {
-            targetPage.classList.add('active');
-        }, 10);
-    } else {
-        console.error("Страница не найдена:", pageId);
+    if (currentPage === 'home') {
+        document.querySelector('.nav-item:nth-child(3)').classList.add('active');
+    } else if (currentPage === 'requisites') {
+        document.querySelector('.nav-item:nth-child(1)').classList.add('active');
+    } else if (currentPage === 'history') {
+        document.querySelector('.nav-item:nth-child(2)').classList.add('active');
     }
     
-    // Обновляем кнопку "Назад"
-    updateBackButton();
-    
-    // Обновляем активное меню
-    updateActiveMenu(pageId);
-    
-    // Прокручиваем вверх
-    window.scrollTo(0, 0);
+    // Обновляем данные на странице
+    updatePageData();
 }
 
-// Обновление кнопки "Назад"
-function updateBackButton() {
-    const backBtn = document.getElementById('backBtn');
-    if (!backBtn) return;
+// Обновление данных на странице
+function updatePageData() {
+    // Обновляем баланс
+    document.querySelectorAll('.balance-amount').forEach(el => {
+        if (el.id !== 'currentBalance') {
+            el.textContent = balance.toFixed(2) + '$';
+        }
+    });
     
-    if (currentPage === 'homePage') {
-        backBtn.style.display = 'none';
-    } else {
-        backBtn.style.display = 'flex';
+    // Обновляем статистику
+    document.querySelectorAll('#depositCount').forEach(el => {
+        el.textContent = depositCount;
+    });
+    document.querySelectorAll('#withdrawCount').forEach(el => {
+        el.textContent = withdrawCount;
+    });
+    document.querySelectorAll('#transferCount').forEach(el => {
+        el.textContent = transferCount;
+    });
+    
+    // Обновляем доступный баланс
+    document.querySelectorAll('#availableBalance').forEach(el => {
+        el.textContent = balance.toFixed(2) + '$';
+    });
+    
+    // Обновляем адрес кошелька
+    document.querySelectorAll('#walletAddress').forEach(el => {
+        el.textContent = walletAddress;
+    });
+    document.querySelectorAll('#depositAddress').forEach(el => {
+        el.textContent = walletAddress;
+    });
+}
+
+// Инициализация общих функций
+function initCommonFunctions() {
+    console.log("Инициализация общих функций...");
+    
+    // Инициализация глобальных функций
+    window.showMain = () => loadPage('home');
+    window.showRequisitesPage = () => loadPage('requisites');
+    window.showHistoryPage = () => loadPage('history');
+    window.showDepositPage = () => loadPage('deposit');
+    window.showWithdrawPage = () => loadPage('withdraw');
+    window.showTransferPage = () => loadPage('transfer');
+    
+    window.copyUserId = copyUserId;
+    window.copyAddress = copyAddress;
+    window.updateBalance = updateBalance;
+    window.contactSupport = contactSupport;
+}
+
+// Инициализация специфичных для страницы функций
+function initPageSpecificFunctions(pageName) {
+    console.log("Инициализация функций для страницы:", pageName);
+    
+    switch(pageName) {
+        case 'home':
+            initHomePage();
+            break;
+        case 'requisites':
+            initRequisitesPage();
+            break;
+        case 'history':
+            initHistoryPage();
+            break;
+        case 'deposit':
+            initDepositPage();
+            break;
+        case 'withdraw':
+            initWithdrawPage();
+            break;
+        case 'transfer':
+            initTransferPage();
+            break;
     }
 }
 
-// Обновление активного пункта меню
-function updateActiveMenu(pageId) {
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => item.classList.remove('active'));
+// Функции для главной страницы
+function initHomePage() {
+    console.log("Инициализация главной страницы...");
     
-    if (pageId === 'homePage') {
-        const homeBtn = document.querySelector('.nav-item:nth-child(3)');
-        if (homeBtn) homeBtn.classList.add('active');
-    } else if (pageId === 'requisitesPage') {
-        const requisitesBtn = document.querySelector('.nav-item:nth-child(1)');
-        if (requisitesBtn) requisitesBtn.classList.add('active');
-    } else if (pageId === 'historyPage') {
-        const historyBtn = document.querySelector('.nav-item:nth-child(2)');
-        if (historyBtn) historyBtn.classList.add('active');
-    }
-}
-
-// Показать главную страницу
-function showMain() {
-    showPage('homePage');
-}
-
-// Показать реквизиты
-function showRequisitesPage() {
-    showPage('requisitesPage');
-}
-
-// Показать историю
-function showHistoryPage() {
-    showPage('historyPage');
-}
-
-// Показать пополнение
-function showDepositPage() {
-    showPage('depositPage');
-}
-
-// Показать вывод
-function showWithdrawPage() {
-    showPage('withdrawPage');
-}
-
-// Показать перевод
-function showTransferPage() {
-    showPage('transferPage');
-}
-
-// Настройка обработчиков событий
-function setupEventListeners() {
-    console.log("Настройка обработчиков событий...");
-    
-    // Слушатель для количества символов в заметке
-    const transferNote = document.getElementById('transferNote');
-    const charCount = document.getElementById('charCount');
-    
-    if (transferNote && charCount) {
-        transferNote.addEventListener('input', function() {
-            charCount.textContent = this.value.length;
-        });
-    }
-    
-    // Слушатель для суммы вывода
-    const withdrawAmount = document.getElementById('withdrawAmount');
-    const receiveAmount = document.getElementById('receiveAmount');
-    
-    if (withdrawAmount && receiveAmount) {
-        withdrawAmount.addEventListener('input', function() {
-            const amount = parseFloat(this.value) || 0;
-            const fee = 1; // Комиссия 1 USDT
-            const receive = amount - fee;
-            receiveAmount.textContent = receive > 0 ? receive.toFixed(2) + ' USDT' : '0.00 USDT';
-        });
-    }
-    
-    // Слушатель для суммы перевода
-    const transferAmount = document.getElementById('transferAmount');
-    const recipientAmount = document.getElementById('recipientAmount');
-    
-    if (transferAmount && recipientAmount) {
-        transferAmount.addEventListener('input', function() {
-            const amount = parseFloat(this.value) || 0;
-            const feePercent = 0.5; // Комиссия 0.5%
-            const fee = amount * (feePercent / 100);
-            const receive = amount - fee;
-            recipientAmount.textContent = receive.toFixed(2) + '$';
-            
-            // Обновляем превью получателя
-            updateRecipientPreview();
-        });
-    }
-    
-    // Слушатель для ID получателя
-    const recipientId = document.getElementById('recipientId');
-    if (recipientId) {
-        recipientId.addEventListener('input', updateRecipientPreview);
-    }
-    
-    // Обработчики для карточек на главной
+    // Обработчики для карточек
     document.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('click', function(e) {
+        card.addEventListener('click', function() {
             const action = this.querySelector('h3').textContent;
-            console.log("Нажата карточка:", action);
             
             // Анимация нажатия
             this.style.transform = 'scale(0.95)';
@@ -210,7 +207,7 @@ function setupEventListeners() {
                 this.style.transform = 'scale(1)';
             }, 150);
             
-            // Навигация в зависимости от действия
+            // Навигация
             switch(action) {
                 case 'Пополнить':
                     showDepositPage();
@@ -225,8 +222,157 @@ function setupEventListeners() {
         });
     });
     
-    console.log("Обработчики событий настроены");
+    // Обработчик для обновления баланса
+    const refreshBtn = document.querySelector('.refresh-btn');
+    if (refreshBtn) {
+        refreshBtn.onclick = updateBalance;
+    }
 }
+
+// Функции для страницы реквизитов
+function initRequisitesPage() {
+    console.log("Инициализация страницы реквизитов...");
+    
+    // Обработчики для кнопок
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.onclick = copyAddress;
+    });
+    
+    document.querySelectorAll('.address-box').forEach(box => {
+        box.onclick = copyAddress;
+    });
+    
+    const shareBtn = document.querySelector('.wallet-btn:nth-child(1)');
+    if (shareBtn) shareBtn.onclick = shareWallet;
+    
+    const saveBtn = document.querySelector('.wallet-btn:nth-child(2)');
+    if (saveBtn) saveBtn.onclick = saveWalletInfo;
+}
+
+// Функции для страницы истории
+function initHistoryPage() {
+    console.log("Инициализация страницы истории...");
+    
+    // Обработчики для кнопок
+    const refreshBtn = document.querySelector('.history-btn:nth-child(1)');
+    if (refreshBtn) refreshBtn.onclick = loadHistory;
+    
+    const clearBtn = document.querySelector('.history-btn:nth-child(2)');
+    if (clearBtn) clearBtn.onclick = clearHistory;
+    
+    // Обновляем статистику в истории
+    document.getElementById('historyDepositCount').textContent = depositCount;
+    document.getElementById('historyWithdrawCount').textContent = withdrawCount;
+    document.getElementById('historyTransferCount').textContent = transferCount;
+}
+
+// Функции для страницы пополнения
+function initDepositPage() {
+    console.log("Инициализация страницы пополнения...");
+    
+    // Обработчики для кнопок
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.onclick = copyAddress;
+    });
+    
+    document.querySelectorAll('.address-box').forEach(box => {
+        box.onclick = copyAddress;
+    });
+    
+    const checkBtn = document.querySelector('.check-btn');
+    if (checkBtn) checkBtn.onclick = checkDeposit;
+    
+    const supportBtn = document.querySelector('.support-btn');
+    if (supportBtn) supportBtn.onclick = contactSupport;
+}
+
+// Функции для страницы вывода
+function initWithdrawPage() {
+    console.log("Инициализация страницы вывода...");
+    
+    // Обработчики для формы
+    const form = document.querySelector('.withdraw-form');
+    if (form) {
+        form.onsubmit = processWithdraw;
+    }
+    
+    // Обработчик для вставки адреса
+    const pasteBtn = document.querySelector('.paste-btn');
+    if (pasteBtn) {
+        pasteBtn.onclick = pasteAddress;
+    }
+    
+    // Обработчик для суммы вывода
+    const amountInput = document.getElementById('withdrawAmount');
+    const receiveAmount = document.getElementById('receiveAmount');
+    
+    if (amountInput && receiveAmount) {
+        amountInput.addEventListener('input', function() {
+            const amount = parseFloat(this.value) || 0;
+            const fee = 1; // Комиссия 1 USDT
+            const receive = amount - fee;
+            receiveAmount.textContent = receive > 0 ? receive.toFixed(2) + ' USDT' : '0.00 USDT';
+        });
+    }
+}
+
+// Функции для страницы перевода
+function initTransferPage() {
+    console.log("Инициализация страницы перевода...");
+    
+    // Обработчики для формы
+    const form = document.querySelector('.transfer-form');
+    if (form) {
+        form.onsubmit = processTransfer;
+    }
+    
+    // Обработчик для сканирования QR
+    const scanBtn = document.querySelector('.scan-btn');
+    if (scanBtn) {
+        scanBtn.onclick = scanQR;
+    }
+    
+    // Обработчик для быстрых сумм
+    document.querySelectorAll('.quick-amount').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const amount = parseInt(this.textContent);
+            setTransferAmount(amount);
+        });
+    });
+    
+    // Обработчик для суммы перевода
+    const transferAmount = document.getElementById('transferAmount');
+    const recipientAmount = document.getElementById('recipientAmount');
+    
+    if (transferAmount && recipientAmount) {
+        transferAmount.addEventListener('input', function() {
+            const amount = parseFloat(this.value) || 0;
+            const feePercent = 0.5; // Комиссия 0.5%
+            const fee = amount * (feePercent / 100);
+            const receive = amount - fee;
+            recipientAmount.textContent = receive.toFixed(2) + '$';
+            updateRecipientPreview();
+        });
+    }
+    
+    // Обработчик для ID получателя
+    const recipientId = document.getElementById('recipientId');
+    if (recipientId) {
+        recipientId.addEventListener('input', updateRecipientPreview);
+    }
+    
+    // Обработчик для заметки
+    const transferNote = document.getElementById('transferNote');
+    const charCount = document.getElementById('charCount');
+    
+    if (transferNote && charCount) {
+        transferNote.addEventListener('input', function() {
+            charCount.textContent = this.value.length;
+        });
+    }
+}
+
+// ============ ОБЩИЕ ФУНКЦИИ ============
 
 // Копирование ID пользователя
 function copyUserId() {
@@ -273,8 +419,6 @@ function setTransferAmount(amount) {
     const input = document.getElementById('transferAmount');
     if (input) {
         input.value = amount;
-        
-        // Триггерим событие input для обновления расчетов
         const event = new Event('input');
         input.dispatchEvent(event);
     }
@@ -293,11 +437,6 @@ function updateRecipientPreview() {
     } else {
         preview.style.display = 'none';
     }
-}
-
-// Сканирование QR-кода
-function scanQR() {
-    showNotification('Функция сканирования QR-кода в разработке', 'warning');
 }
 
 // Поделиться кошельком
@@ -322,7 +461,6 @@ function shareWallet() {
 function saveWalletInfo() {
     const walletInfo = `MGR_12 Кошелек\n\nАдрес USDT (TRC-20):\n${walletAddress}\n\nID пользователя: ${userId}`;
     
-    // Создаем файл для скачивания
     const blob = new Blob([walletInfo], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -338,11 +476,9 @@ function saveWalletInfo() {
 
 // Проверка пополнения
 function checkDeposit() {
-    // Имитация запроса к серверу
     showNotification('Проверяем новые пополнения...', 'info');
     
     setTimeout(() => {
-        // В реальном приложении здесь будет ответ от сервера
         showNotification('Новых пополнений не обнаружено', 'info');
     }, 2000);
 }
@@ -386,22 +522,17 @@ function processWithdraw(event) {
         return;
     }
     
-    // Подтверждение вывода
     const confirmText = `Подтвердите вывод:\n\nСумма: ${amount.toFixed(2)}$\nАдрес: ${address}\nКомиссия: 1 USDT\nК получению: ${(amount - 1).toFixed(2)} USDT`;
     
     if (confirm(confirmText)) {
-        // Имитация обработки вывода
         showNotification('Заявка на вывод отправлена на обработку', 'info');
         
-        // Обновляем баланс и статистику
         setTimeout(() => {
             balance -= amount;
             withdrawCount++;
-            updateBalanceDisplay();
-            updateStats();
+            updatePageData();
             showNotification('Вывод успешно выполнен!', 'success');
             
-            // Отправляем данные в бота
             sendAction('withdraw', {
                 amount: amount,
                 address: address,
@@ -409,7 +540,6 @@ function processWithdraw(event) {
                 balance: balance
             });
             
-            // Возвращаемся на главную
             showMain();
         }, 3000);
     }
@@ -438,25 +568,20 @@ function processTransfer(event) {
         return;
     }
     
-    const fee = amount * 0.005; // 0.5%
+    const fee = amount * 0.005;
     const total = amount + fee;
     
-    // Подтверждение перевода
     const confirmText = `Подтвердите перевод:\n\nID получателя: ${recipientId}\nСумма: ${amount.toFixed(2)}$\nКомиссия: ${fee.toFixed(2)}$\nИтого: ${total.toFixed(2)}$`;
     
     if (confirm(confirmText)) {
-        // Имитация обработки перевода
         showNotification('Обрабатываем перевод...', 'info');
         
-        // Обновляем баланс и статистику
         setTimeout(() => {
             balance -= total;
             transferCount++;
-            updateBalanceDisplay();
-            updateStats();
+            updatePageData();
             showNotification(`Перевод ${amount.toFixed(2)}$ на ID ${recipientId} выполнен!`, 'success');
             
-            // Отправляем данные в бота
             sendAction('transfer', {
                 recipientId: recipientId,
                 amount: amount,
@@ -465,7 +590,6 @@ function processTransfer(event) {
                 balance: balance
             });
             
-            // Возвращаемся на главную
             showMain();
         }, 2000);
     }
@@ -473,15 +597,10 @@ function processTransfer(event) {
 
 // Функция обновления баланса
 function updateBalance() {
-    const balanceElement = document.getElementById('currentBalance');
-    if (!balanceElement) return;
-    
-    balanceElement.style.opacity = '0.5';
+    showNotification('Обновляем баланс...', 'info');
     
     setTimeout(() => {
-        // В реальном приложении здесь будет запрос к серверу
-        balanceElement.style.opacity = '1';
-        showNotification('Баланс обновлен');
+        showNotification('Баланс обновлен', 'success');
     }, 500);
 }
 
@@ -504,6 +623,11 @@ function sendAction(actionType, data) {
     console.log("Данные отправлены в бота:", fullData);
 }
 
+// Сканирование QR-кода
+function scanQR() {
+    showNotification('Функция сканирования QR-кода в разработке', 'warning');
+}
+
 // Показать уведомление
 function showNotification(message, type = 'success') {
     const colors = {
@@ -520,14 +644,12 @@ function showNotification(message, type = 'success') {
         error: 'fa-times-circle'
     };
     
-    // Удаляем старое уведомление если есть
     const oldNotification = document.querySelector('.notification');
     if (oldNotification) {
         oldNotification.style.animation = 'slideOut 0.3s ease-out';
         setTimeout(() => oldNotification.remove(), 300);
     }
     
-    // Создаем новое уведомление
     const notification = document.createElement('div');
     notification.className = 'notification';
     notification.style.background = `linear-gradient(135deg, ${colors[type]} 0%, ${colors[type]}80 100%)`;
@@ -543,37 +665,14 @@ function showNotification(message, type = 'success') {
     
     document.body.appendChild(notification);
     
-    // Удаляем через 3 секунды
     setTimeout(() => {
         notification.style.animation = 'slideOut 0.3s ease-out';
         setTimeout(() => notification.remove(), 300);
     }, 3000);
 }
 
-// Делаем функции доступными глобально для onclick
-window.showMain = showMain;
-window.showRequisitesPage = showRequisitesPage;
-window.showHistoryPage = showHistoryPage;
-window.showDepositPage = showDepositPage;
-window.showWithdrawPage = showWithdrawPage;
-window.showTransferPage = showTransferPage;
-window.copyUserId = copyUserId;
-window.copyAddress = copyAddress;
-window.pasteAddress = pasteAddress;
-window.setTransferAmount = setTransferAmount;
-window.scanQR = scanQR;
-window.shareWallet = shareWallet;
-window.saveWalletInfo = saveWalletInfo;
-window.checkDeposit = checkDeposit;
-window.loadHistory = loadHistory;
-window.clearHistory = clearHistory;
-window.processWithdraw = processWithdraw;
-window.processTransfer = processTransfer;
-window.updateBalance = updateBalance;
-window.contactSupport = contactSupport;
+// Делаем loadPage доступной глобально
+window.loadPage = loadPage;
 
 // Инициализация при загрузке
 document.addEventListener('DOMContentLoaded', initApp);
-
-// Переменные для управления страницами
-let currentPage = 'homePage';

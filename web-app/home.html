@@ -1,0 +1,60 @@
+<div class="page active" id="homePage">
+    <div class="company-section">
+        <h1><i class="fas fa-crown"></i> MGR_12</h1>
+        <p class="company-slogan">топ 1 платформа СНГ</p>
+    </div>
+
+    <div class="balance-display">
+        <div class="balance-label">Баланс аккаунта</div>
+        <div class="balance-amount" id="currentBalance">0.00$</div>
+        <div class="balance-actions">
+            <button class="refresh-btn" onclick="updateBalance()">
+                <i class="fas fa-sync-alt"></i> Обновить
+            </button>
+        </div>
+    </div>
+
+    <div class="cards-grid">
+        <div class="card" onclick="showDepositPage()">
+            <div class="card-icon deposit">
+                <i class="fas fa-plus-circle"></i>
+            </div>
+            <h3>Пополнить</h3>
+            <p>Пополнение USDT (TRC-20)</p>
+        </div>
+
+        <div class="card" onclick="showWithdrawPage()">
+            <div class="card-icon withdraw">
+                <i class="fas fa-arrow-up"></i>
+            </div>
+            <h3>Вывести</h3>
+            <p>Вывод USDT (TRC-20)</p>
+        </div>
+
+        <div class="card" onclick="showTransferPage()">
+            <div class="card-icon transfer">
+                <i class="fas fa-exchange-alt"></i>
+            </div>
+            <h3>Перевести</h3>
+            <p>Перевод USDT на другой аккаунт</p>
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <h2><i class="fas fa-chart-line"></i> Статистика</h2>
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-label">Пополнений</span>
+                <span class="stat-value" id="depositCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Выводов</span>
+                <span class="stat-value" id="withdrawCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Переводов</span>
+                <span class="stat-value" id="transferCount">0</span>
+            </div>
+        </div>
+    </div>
+</div>
